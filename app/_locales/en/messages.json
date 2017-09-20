@@ -1,0 +1,18 @@
+{
+  "appName": {
+    "message": "YouTrack Time and Task Tracker",
+    "description": "The name of the application"
+  },
+  "appShortName": {
+    "message": "yttt",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "YouTrack extension for web browsers",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "Task List",
+    "description": "The title of the browser action button"
+  }
+}
