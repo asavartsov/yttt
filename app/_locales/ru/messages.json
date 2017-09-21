@@ -1,0 +1,66 @@
+{
+  "appName": {
+    "message": "YouTrack: учет веремени и задач",
+    "description": "The name of the application"
+  },
+  "appShortName": {
+    "message": "yttt",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "Расширение YouTrack для веб-браузеров",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "Список задач",
+    "description": "The title of the browser action button"
+  },
+  "options": {
+    "message": "Настройки"
+  },
+  "optionsYTAddress": {
+    "message": "Адрес сервера YouTrack"
+  },
+  "optionsFilterTabs": {
+    "message": "Вкладки с фильтрами"
+  },
+  "optionsTitle": {
+    "message": "Название"
+  },
+  "optionsFilter": {
+    "message": "Фильтр"
+  },
+  "optionsSave": {
+    "message": "Сохранить"
+  },
+  "optionsAddFilterTab": {
+    "message": "Добавить вкладку"
+  },
+  "taskStart": {
+    "message": "Старт"
+  },
+  "taskStop": {
+    "message": "Стоп"
+  },
+  "taskFix": {
+    "message": "Исправлена"
+  },
+  "taskSummary": {
+    "message": "Задача"
+  },
+  "taskNothingFound": {
+    "message": "Нет задач, соответствующих фильтру"
+  },
+  "taskAssignee": {
+    "message": "Ответственный"
+  },
+  "taskSpent": {
+    "message": "Время"
+  },
+  "h": {
+    "message": "ч "
+  },
+  "m": {
+    "message": "м"
+  }
+}

@@ -91,7 +91,6 @@ export default {
     filters: {
         minutes: function (m) {
             var hours = parseInt(m / 60);
-            console.log(this)
             return ((hours > 0 ) ? hours + l10n.l10n('h') : '') + m % 60 + l10n.l10n('m')
         }
     }

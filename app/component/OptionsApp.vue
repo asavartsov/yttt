@@ -16,7 +16,7 @@
             <div class="col-sm-6 input-group">
                 <input type="text" class="form-control" v-model="filter.filter" :placeholder="'optionsFilter' | l10n">
                 <div class="input-group-btn">
-                    <button type="button" class="btn btn-danger" @click="removeFilter(idx)" v-if="canRemoveFilter"><span class="glyphicon glyphicon-minus"></span></button>
+                    <button type="button" class="btn btn-danger" @click="removeFilter(idx)" :disabled="idx == 0"><span class="glyphicon glyphicon-minus"></span></button>
                 </div>
             </div>
         </div>
