@@ -14,5 +14,53 @@
   "browserActionTitle": {
     "message": "Task List",
     "description": "The title of the browser action button"
+  },
+  "options": {
+    "message": "Options"
+  },
+  "optionsYTAddress": {
+    "message": "YouTrack Server Address"
+  },
+  "optionsFilterTabs": {
+    "message": "Filter Tabs"
+  },
+  "optionsTitle": {
+    "message": "Title"
+  },
+  "optionsFilter": {
+    "message": "Filter"
+  },
+  "optionsSave": {
+    "message": "Save Options"
+  },
+  "optionsAddFilterTab": {
+    "message": "Add Filter Tab"
+  },
+  "taskStart": {
+    "message": "Start"
+  },
+  "taskStop": {
+    "message": "Stop"
+  },
+  "taskFix": {
+    "message": "Set as Fixed"
+  },
+  "taskSummary": {
+    "message": "Summary"
+  },
+  "taskNothingFound": {
+    "message": "There are no tasks matching given filters"
+  },
+  "taskAssignee": {
+    "message": "Assignee"
+  },
+  "taskSpent": {
+    "message": "Spent"
+  },
+  "h": {
+    "message": "h "
+  },
+  "m": {
+    "message": "m"
   }
 }

@@ -3,13 +3,14 @@ import qs from 'qs'
 
 export default class YT {
     constructor(baseURL) {
-        this.api = axios.create({
-            baseURL: baseURL + "/rest"
-        });
+        this.baseURL = baseURL;
+        this.api = axios.create();
     }
 
     getTasks(filter) {
-        return this.api.get("issue?" + qs.stringify({max: 100, filter: filter})).then(r => r.data.issue);
+        return this.api
+            .get("rest/issue?" + qs.stringify({max: 100, filter: filter}), {baseURL: this.baseURL})
+            .then(r => r.data.issue);
     }
 
     taskCommand(id, command, comment) {
@@ -19,10 +20,13 @@ export default class YT {
             data.comment = comment;
         }
 
-        return this.api.post("issue/" + id + "/execute", qs.stringify(data));
+        return this.api
+            .post("rest/issue/" + id + "/execute", qs.stringify(data), {baseURL: this.baseURL});
     }
 
     getTaskCount(filter) {
-        return this.api.get("issue/count?" + qs.stringify({filter: filter})).then(r => r.data.value);
+        return this.api
+            .get("rest/issue/count?" + qs.stringify({filter: filter}), {baseURL: this.baseURL})
+            .then(r => r.data.value);
     }
 }

@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 export default class Messaging {
     constructor() {
         this.subscriptions = [];
