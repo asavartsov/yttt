@@ -31,13 +31,13 @@ export default {
     methods: {
         startTimer() {
             this.YT
-                .taskCommand(this.id, "Timer Start")
+                .taskCommand(this.id, "Timer Start state In Progress")
                 .then(() => this.bus.send('loadTasks'));
         },
 
         stopTimer() {
             this.YT
-                .taskCommand(this.id, "Timer Stop")
+                .taskCommand(this.id, "Timer Stop state Open")
                 .then(() => this.bus.send('loadTasks'));
         },
 
