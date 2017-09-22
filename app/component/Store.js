@@ -1,14 +1,15 @@
+import Messaging from './Messaging'
+import L10n from './L10n'
+
 let _defaults = { 
     baseURL: "http://ticket.infolan.org",
     filters: [
         {
-            title: "My Tasks",
+            title: L10n.l10n('myTasks'),
             filter: "assignee: me -Resolved sort by: updated"
         }
     ]
 };
-
-import Messaging from './Messaging'
 
 export default class Store {
     constructor() {

@@ -3,9 +3,9 @@
   <table class="table table-hover table-bordered">
     <thead>
       <tr>
-        <th><input type="text" class="form-control input-sm" v-model="search" :placeholder="'taskSummary' | l10n"></th>
-        <th class="wider">{{'taskAssignee' | l10n}}</th>
-        <th class="wide">{{'taskSpent' | l10n}}</th>
+        <th><input type="text" class="form-control input-sm" v-model="search" :placeholder="$l10n('taskSummary')"></th>
+        <th class="wider">{{$l10n('taskAssignee')}}</th>
+        <th class="wide">{{$l10n('taskSpent')}}</th>
         <th></th>
       </tr>
     </thead>
@@ -14,7 +14,7 @@
     </tbody>
   </table>
 
-  <div v-if="filteredTasks.length == 0" class="no-tasks">{{'taskNothingFound' | l10n}}</div>
+  <div v-if="filteredTasks.length == 0" class="no-tasks">{{$l10n('taskNothingFound')}}</div>
 </div>
 </template>
 
@@ -68,7 +68,7 @@ export default {
 </script>
 
 <style lang="css">
-  table {
+  .tab-container .table-bordered {
     border: 0;
   }
 

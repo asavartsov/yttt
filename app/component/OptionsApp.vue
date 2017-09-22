@@ -1,27 +1,27 @@
 <template>
 <div>
-    <h1>{{'options' | l10n}}</h1>
+    <h1>{{$l10n('options')}}</h1>
     <form class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-12">
-                <label>{{'optionsYTAddress' | l10n}}</label>
+                <label>{{$l10n('optionsYTAddress')}}</label>
                 <input type="text" class="form-control" v-model="options.baseURL" placeholder="http://youtrack.corp.com">
             </div>
         </div>
-        <h2>{{'optionsFilterTabs' | l10n}}</h2>
+        <h2>{{$l10n('optionsFilterTabs')}}</h2>
         <div v-for="(filter, idx) in options.filters" :key="idx" class="form-group">
             <div class="col-sm-6">
-                <input type="text" class="form-control" v-model="filter.title" :placeholder="'optionsTitle' | l10n">
+                <input type="text" class="form-control" v-model="filter.title" :placeholder="$l10n('optionsTitle')">
             </div> 
             <div class="col-sm-6 input-group">
-                <input type="text" class="form-control" v-model="filter.filter" :placeholder="'optionsFilter' | l10n">
+                <input type="text" class="form-control" v-model="filter.filter" :placeholder="$l10n('optionsFilter')">
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-danger" @click="removeFilter(idx)" :disabled="idx == 0"><span class="glyphicon glyphicon-minus"></span></button>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-primary" @click="save">{{'optionsSave' | l10n}}</button>
-        <button type="button" class="btn btn-default" @click="addFilter">{{'optionsAddFilterTab' | l10n}}</button>
+        <button type="button" class="btn btn-primary" @click="save">{{$l10n('optionsSave')}}</button>
+        <button type="button" class="btn btn-default" @click="addFilter">{{$l10n('optionsAddFilterTab')}}</button>
     </form>
 </div>
 </template>
@@ -54,12 +54,6 @@ export default {
 
         removeFilter(idx) {
             this.options.filters.splice(idx, 1);
-        }
-    },
-
-    computed: {
-        canRemoveFilter: function() {
-            return _.get(this.options, 'filters.length') > 1;
         }
     }
 }

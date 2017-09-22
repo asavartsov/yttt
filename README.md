@@ -1,6 +1,6 @@
-# vue chrome extension example
+# YouTrack Time and Task Tracker Extension
 
-develop chrome extension with vue
+Google Chrome extension for tracking time on tasks: view list of tasks by given filters, start and stop timers on them.
 
 ## Installation
 
@@ -8,7 +8,7 @@ develop chrome extension with vue
 
 ## Usage
 
-Run `$ gulp --watch` and load the `dist`-directory into chrome.
+Run `$ gulp --watch` or `npm run dev` and load the `dist`-directory into Chrome.
 
 ## Entryfiles (bundles)
 
@@ -37,13 +37,15 @@ There are two kinds of entryfiles that create bundles.
 
 Zips your `dist` directory and saves it in the `packages` directory.
 
-    $ gulp pack --vendor=firefox
+Chrome:
+    $ gulp pack --vendor=chrome
+Or
+    $ npm run build
 
 ### Version
 
 Increments version number of `manifest.json` and `package.json`,
 commits the change to git and adds a git tag.
-
 
     $ gulp patch      // => 0.0.X
 

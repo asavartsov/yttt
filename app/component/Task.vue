@@ -5,13 +5,13 @@
       <td>{{spent | minutes}}</td>
       <td>
             <div class="btn-group">
-                <button type="button" :title="'taskStart' | l10n" class="btn btn-xs btn-primary" @click="startTimer" v-if="!isStarted">
+                <button type="button" :title="$l10n('taskStart')" class="btn btn-xs btn-primary" @click="startTimer" v-if="!isStarted">
                     <span class="glyphicon glyphicon-play"></span>
                 </button>
-                <button type="button" :title="'taskStop' | l10n" class="btn btn-xs btn-danger" @click="stopTimer" v-if="isStarted">
+                <button type="button" :title="$l10n('taskStop')" class="btn btn-xs btn-danger" @click="stopTimer" v-if="isStarted">
                     <span class="glyphicon glyphicon-stop"></span>
                 </button>
-                <button type="button" :title="'taskFix' | l10n" class="btn btn-xs btn-default" @click="complete">
+                <button type="button" :title="$l10n('taskFix')" class="btn btn-xs btn-default" @click="complete">
                     <span class="glyphicon glyphicon-ok"></span>
                 </button>
             </div>
@@ -19,9 +19,9 @@
   </tr>
 </template>
 
-<<script>
+<script>
 import _ from 'lodash'
-import l10n from './L10n'
+import L10n from './L10n'
 
 export default {
     inject: ['YT', 'bus'],
@@ -91,7 +91,7 @@ export default {
     filters: {
         minutes: function (m) {
             var hours = parseInt(m / 60);
-            return ((hours > 0 ) ? hours + l10n.l10n('h') : '') + m % 60 + l10n.l10n('m')
+            return ((hours > 0 ) ? hours + L10n.l10n('h') : '') + m % 60 + L10n.l10n('m')
         }
     }
 }
