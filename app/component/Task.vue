@@ -1,8 +1,17 @@
 <template>
-  <tr :class="{danger: isStarted, warning: isStarred}">
-      <td class="search-highlight"><a v-bind:href="issueURL" target="_blank">{{id}}</a> {{summary}}</td>
-      <td>{{assignee}}</td>
-      <td>{{spent | minutes}}</td>
+  <tr>
+      <td>
+          <a class="search-highlight" v-bind:href="issueURL" target="_blank">{{id}}</a>
+          <span class="search-highlight">{{summary}}</span>
+          <div class="tags">
+              <span :style="priority.color | color" :title="priority.value">{{priority.valueShort}}</span>
+              <span>{{state}}</span>
+              <span>{{assignee}}</span>
+              <span v-for="(tag, idx) in tag" :key="idx" class="tag search-highlight">{{tag.value}}</span>
+              <span v-for="(ver, idx) in fixVersions" :key="idx" class="version">{{ver}}</span>
+              <span :class="{started: isStarted}" v-if="isStarted">В работе</span>
+          </div>
+      </td>
       <td>
             <div class="btn-group">
                 <button type="button" :title="$l10n('taskStart')" class="btn btn-xs btn-primary" @click="startTimer" v-if="!isStarted">
@@ -15,6 +24,7 @@
                     <span class="glyphicon glyphicon-ok"></span>
                 </button>
             </div>
+            <div class="tags"><span class="timer" :class="{started: isStarted}">{{spent | minutes}}</span></div>
       </td>
   </tr>
 </template>
@@ -66,21 +76,34 @@ export default {
             return _.chain(this.field).find({name: 'Assignee'}).get('value[0].fullName').value();
         },
 
+        state: function() {
+            return _.chain(this.field).find({name: 'State'}).get('value[0]').value();
+        },
+
         spent: function () {
-            let timerTime = parseInt(_.chain(this.field).find({name: 'Timer time'}).get('value[0]'));
-            let timeSpent = parseInt(_.chain(this.field).find({name: 'Spent time'}).get('value[0]'));
             let totalTimeSpent = 0;
             
             if(this.isStarted) {
+                let timerTime = parseInt(_.chain(this.field).find({name: 'Timer time'}).get('value[0]'));                
                 let now = new Date().getTime();
-                totalTimeSpent = Math.round((now - timerTime) / 1000 / 60);
+                return Math.round((now - timerTime) / 1000 / 60);
             }
+            else {
+                let timeSpent = parseInt(_.chain(this.field).find({name: 'Spent time'}).get('value[0]'));            
+                return timeSpent || 0;
+            }
+        },
 
-            if (timeSpent) {
-                totalTimeSpent += timeSpent;
+        fixVersions: function() {
+            return _.chain(this.field).find({name: 'Fix versions'}).get('value').value();
+        },
+
+        priority: function() {
+            let field = _.find(this.field, {name: 'Priority'});
+
+            if (field) {
+                return { value: field.value[0], valueShort: field.value[0][0], color: field.color };
             }
-            
-            return totalTimeSpent;
         },
 
         isStarred: function () {
@@ -92,7 +115,51 @@ export default {
         minutes: function (m) {
             var hours = parseInt(m / 60);
             return ((hours > 0 ) ? hours + L10n.l10n('h') : '') + m % 60 + L10n.l10n('m')
+        },
+
+        color: function (c) {
+            let fallback = (c) => c ? c : 'transparent';
+            return [
+                'background:' + fallback(c.bg), 
+                'color:' + fallback(c.fg)
+            ].join(';');
         }
     }
 }
 </script>
+
+<style lang="css">
+.tags {
+    margin: 2px 0 -3px 0;
+}
+
+.tags span {
+    font-size: 11px;
+    margin-right: 5px;
+    background: rgba(214, 214, 214, 0.32);
+    padding: 2px 3px;
+    border-radius: 3px;
+}
+
+.tags .tag {
+    background: rgba(255, 148, 40, 0.95);
+    color: white;
+}
+
+.tags .version {
+    background: rgba(153, 147, 249, 0.32);
+}
+
+.tags .timer {
+    background: transparent;
+}
+
+.tags .started {
+    background: #d9534f;
+    color: white;
+}
+
+.started td {
+    background: #fff1f1;
+}
+</style>

@@ -1,14 +1,7 @@
 <template lang="html">
 <div>
+  <input type="text" class="form-control input-sm search" v-model="search" :placeholder="$l10n('search')">
   <table class="table table-hover table-bordered">
-    <thead>
-      <tr>
-        <th><input type="text" class="form-control input-sm" v-model="search" :placeholder="$l10n('taskSummary')"></th>
-        <th class="wider">{{$l10n('taskAssignee')}}</th>
-        <th class="wide">{{$l10n('taskSpent')}}</th>
-        <th></th>
-      </tr>
-    </thead>
     <tbody>
       <task v-for="task in filteredTasks" :key="task.id" :id="task.id" :field="task.field" :tag="task.tag" :search="search"></task>
     </tbody>
@@ -59,8 +52,20 @@ export default {
       var filter = new RegExp(this.search, 'i');
 
       return _.filter(this.tasks, t => {
+        if (filter.test(t.id)) {
+          return true;
+        }
+
         let summary = _.chain(t.field).find({name: 'summary'}).get('value');
-        return filter.test(t.id) || filter.test(summary);
+        if (filter.test(summary)) {
+          return true;
+        }
+
+        if (_.some(t.tag, t => filter.test(t.value))) {
+          return true;
+        }
+
+        // @TODO: Больше полей для поиска
       });
     }
   }
@@ -77,41 +82,21 @@ export default {
     text-decoration: underline;
   }
 
+  .search, .search:focus  {
+    border: 0;
+    box-shadow: none;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;    
+    border-radius: 0;
+    background: transparent;
+    -webkit-box-shdow: none;
+    color: black;
+    margin-bottom: -1px;
+  }
+
   td:last-child {
     min-width: 70px;
-  }
-
-  th input[type=text] {
-      margin: -6px 0;
-      padding: 5px 0;
-      height: auto;
-      font-size: inherit;
-      background: transparent;
-      border: 0;
-      box-shadow: none;
-      -webkit-box-shdow: none;
-      color: black;
-  }
-
-  th input[type=text]:focus {
-      border: 0;
-      box-shadow: none;
-  }
-
-  th input[type=text]::placeholder {
-      color: black;
-  }
-
-  th input[type=text]:focus::placeholder {
-      color: gray;
-  }
-
-  th.wide {
-    width: 90px;
-  }
-
-  th.wider {
-    width: 160px;
   }
 
   mark {

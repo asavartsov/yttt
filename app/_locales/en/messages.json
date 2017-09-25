@@ -45,17 +45,11 @@
   "taskFix": {
     "message": "Set as Fixed"
   },
-  "taskSummary": {
-    "message": "Summary"
+  "search": {
+    "message": "Search"
   },
   "taskNothingFound": {
     "message": "There are no tasks matching given filters"
-  },
-  "taskAssignee": {
-    "message": "Assignee"
-  },
-  "taskSpent": {
-    "message": "Spent"
   },
   "h": {
     "message": "h "

@@ -30,7 +30,7 @@ class Background {
   }
 
   loadTasks() {
-    _.each(this.filters, (filter, idx) => {
+    let _innerFn = () =>_.each(this.filters, (filter, idx) => {
       this.client.getTasks(filter.filter).then(tasks => {
         let key = 'tasks' + idx;
         this.store.saveTasks(key, tasks);
@@ -41,6 +41,14 @@ class Background {
           chrome.browserAction.setBadgeText({text: active.length > 0 ? "T" : ""});
         }
       });
+    });
+
+    // Загружать задачи, только если есть вкладки с YouTrack
+    // Иначе все равно нет аутентификации
+    chrome.tabs.query({url: this.client.baseURL + '/*'}, t => {
+      if (!_.isEmpty(t)) {
+        _innerFn();
+      }      
     });
   }
 }
