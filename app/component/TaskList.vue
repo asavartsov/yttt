@@ -77,11 +77,6 @@ export default {
     border: 0;
   }
 
-  .vue-tabs table a {
-    color: #337ab7;
-    text-decoration: underline;
-  }
-
   .search, .search:focus  {
     border: 0;
     box-shadow: none;
@@ -96,7 +91,7 @@ export default {
   }
 
   td:last-child {
-    min-width: 70px;
+    min-width: 80px;
   }
 
   mark {
