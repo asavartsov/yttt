@@ -91,7 +91,7 @@ export default {
   }
 
   td:last-child {
-    min-width: 80px;
+    min-width: 85px;
   }
 
   mark {

@@ -43,13 +43,16 @@
     "message": "Стоп"
   },
   "taskFix": {
-    "message": "Исправлена"
+    "message": "Отметить как «Исправлена»"
   },
-  "search": {
-    "message": "Поиск"
+  "taskOpen": {
+    "message": "Отметить как «Открыта»"
   },
   "taskNothingFound": {
     "message": "Нет задач, соответствующих фильтру"
+  },
+  "search": {
+    "message": "Поиск"
   },
   "h": {
     "message": "ч "

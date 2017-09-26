@@ -8,7 +8,7 @@
             <div class="tags">
                 <span :style="priority.color | color" :title="priority.value">{{priority.valueShort}}</span>
                 <span>{{state}}</span>
-                <span>{{assignee}}</span>
+                <span v-if="assignee">{{assignee}}</span>
                 <span v-for="(tag, idx) in tag" :key="idx" class="tag search-highlight">{{tag.value}}</span>
                 <span v-for="(version, idx) in fixVersions" :key="idx" class="version">{{version}}</span>
                 <span :class="{started: isStarted}" v-if="isStarted">В работе</span>
@@ -22,8 +22,8 @@
                 <button type="button" :title="$l10n('taskStop')" class="btn btn-xs btn-danger" @click="stopTimer" v-if="isStarted">
                     <span class="glyphicon glyphicon-stop"></span>
                 </button>
-                <button type="button" :title="$l10n('taskFix')" class="btn btn-xs btn-default" @click="complete" v-if="isResolved">
-                    <span class="glyphicon glyphicon-asterisk"></span>
+                <button type="button" :title="$l10n('taskOpen')" class="btn btn-xs btn-default" @click="open" v-if="isResolved">
+                    <span class="glyphicon glyphicon-flash"></span>
                 </button>
                 <button type="button" :title="$l10n('taskFix')" class="btn btn-xs btn-default" @click="complete" v-else>
                     <span class="glyphicon glyphicon-ok"></span>
@@ -61,6 +61,12 @@ export default {
         complete() {
             this.YT
                 .taskCommand(this.id, "Timer Stop state Fixed")
+                .then(() => this.bus.send('loadTasks'));
+        },
+
+        open() {
+            this.YT
+                .taskCommand(this.id, "state Open")
                 .then(() => this.bus.send('loadTasks'));
         },
     },
@@ -147,8 +153,6 @@ export default {
 
 .resolved td {
     background: #fbfbfb;
-    opacity: 0.9;
-    filter: grayscale(100%);
 }
 
 .resolved .summary a {

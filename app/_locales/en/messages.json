@@ -45,11 +45,14 @@
   "taskFix": {
     "message": "Set as Fixed"
   },
-  "search": {
-    "message": "Search"
+  "taskOpen": {
+    "message": "Set as Open"
   },
   "taskNothingFound": {
     "message": "There are no tasks matching given filters"
+  },
+  "search": {
+    "message": "Search"
   },
   "h": {
     "message": "h "
