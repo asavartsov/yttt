@@ -6,7 +6,7 @@
                 <span class="search-highlight">{{summary}}</span>
             </div>
             <div class="tags">
-                <span :style="priority.color | color" :title="priority.value">{{priority.valueShort}}</span>
+                <span :style="priority.color | color" :title="priority.value" :class="priority.id">{{priority.valueShort}}</span>
                 <span>{{state}}</span>
                 <span v-if="assignee">{{assignee}}</span>
                 <span v-for="(tag, idx) in tag" :key="idx" class="tag search-highlight">{{tag.value}}</span>
@@ -119,7 +119,7 @@ export default {
             let field = _.find(this.field, { name: 'Priority' });
 
             if (field) {
-                return { value: field.value[0], valueShort: field.value[0][0], color: field.color };
+                return { value: field.value[0], valueShort: field.value[0][0], color: field.color, id: _.toLower(field.valueId[0]) };
             }
         },
 
@@ -137,8 +137,9 @@ export default {
         color: function(c) {
             let fallback = (c) => c ? c : 'transparent';
             return [
-                'background:' + fallback(c.bg),
-                'color:' + fallback(c.fg)
+                'color:' + fallback(c.fg),
+                'border-color:' + fallback(c.fg),
+                'background:' + fallback(c.bg)
             ].join(';');
         }
     }
@@ -172,9 +173,17 @@ export default {
 .tags span {
     font-size: 11px;
     margin-right: 5px;
-    background: rgba(214, 214, 214, 0.32);
-    padding: 2px 3px;
     border-radius: 3px;
+    background: rgba(214, 214, 214, 0.32);
+    padding: 0 5px;
+    min-width: 20px;
+    height: 16px;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    display: -webkit-inline-box;
+    vertical-align: middle;
 }
 
 .tags .tag {
@@ -197,5 +206,9 @@ export default {
 
 .started td {
     background: #fff1f1;
+}
+
+.show-stopper {
+    border: 1px solid;
 }
 </style>
