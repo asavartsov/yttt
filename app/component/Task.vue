@@ -69,11 +69,21 @@ export default {
                 .taskCommand(this.id, "state Open")
                 .then(() => this.bus.send('loadTasks'));
         },
+
+        getField(name, asArray) {
+            let value = _.chain(this.field).find({ name: name }).get('value').value()
+
+            if (!asArray && _.isArray(value)) {
+                value = _.get(value, 0);
+            }
+
+            return value;
+        }
     },
 
     computed: {
         summary: function() {
-            return _.chain(this.field).find({ name: 'summary' }).get('value').value();
+            return this.getField('summary');
         },
 
         issueURL: function() {
@@ -81,38 +91,37 @@ export default {
         },
 
         isStarted: function() {
-            let timer = _.chain(this.field).find({ name: 'Timer' }).get('value[0]');
-            return timer == 'Start';
+            return this.getField('Timer')  == 'Start';
         },
 
         isResolved: function() {
-            return _.find(this.field, { name: 'resolved' }) !== undefined;
+            return this.getField('resolved') !== undefined;
         },
 
         assignee: function() {
-            return _.chain(this.field).find({ name: 'Assignee' }).get('value[0].fullName').value();
+            return _.get(this.getField('Assignee'), 'fullName')
         },
 
         state: function() {
-            return _.chain(this.field).find({ name: 'State' }).get('value[0]').value();
+            return this.getField('State');
         },
 
         spent: function() {
             let totalTimeSpent = 0;
 
             if (this.isStarted) {
-                let timerTime = parseInt(_.chain(this.field).find({ name: 'Timer time' }).get('value[0]'));
+                let timerTime = parseInt(this.getField('Timer time'));
                 let now = new Date().getTime();
                 return Math.round((now - timerTime) / 1000 / 60);
             }
             else {
-                let timeSpent = parseInt(_.chain(this.field).find({ name: 'Time Spent' }).get('value[0]'));
+                let timeSpent = parseInt(this.getField('Time Spent'));
                 return timeSpent || 0;
             }
         },
 
         fixVersions: function() {
-            return _.chain(this.field).find({ name: 'Fix versions' }).get('value').value();
+            return this.getField('Fix versions', true);
         },
 
         priority: function() {
@@ -134,12 +143,13 @@ export default {
             return ((hours > 0) ? hours + L10n.l10n('h') : '') + m % 60 + L10n.l10n('m')
         },
 
-        color: function(c) {
-            let fallback = (c) => c ? c : 'transparent';
+        color: function(color) {
+            let fallback = (value) => value ? value : 'transparent';
+
             return [
-                'color:' + fallback(c.fg),
-                'border-color:' + fallback(c.fg),
-                'background:' + fallback(c.bg)
+                'color:' + fallback(color.fg),
+                'border-color:' + fallback(color.fg),
+                'background:' + fallback(color.bg)
             ].join(';');
         }
     }
@@ -162,7 +172,7 @@ export default {
 }
 
 .resolved .summary {
-    color: gray;    
+    color: gray;
     text-decoration: line-through;
 }
 

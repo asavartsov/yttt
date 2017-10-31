@@ -35,10 +35,10 @@ export default {
       this.$nextTick(function () {
           let mark = new Mark(document.querySelectorAll('.search-highlight'));
           mark.unmark();
-          
+
           if (!_.isEmpty(this.search)) {
               mark.mark(this.search, {acrossElements: true});
-          }    
+          }
       });
     }
   },
@@ -51,17 +51,17 @@ export default {
 
       var filter = new RegExp(this.search, 'i');
 
-      return _.filter(this.tasks, t => {
-        if (filter.test(t.id)) {
+      return _.filter(this.tasks, task => {
+        if (filter.test(task.id)) {
           return true;
         }
 
-        let summary = _.chain(t.field).find({name: 'summary'}).get('value');
+        let summary = _.chain(task.field).find({name: 'summary'}).get('value');
         if (filter.test(summary)) {
           return true;
         }
 
-        if (_.some(t.tag, t => filter.test(t.value))) {
+        if (_.some(task.tag, tag => filter.test(tag.value))) {
           return true;
         }
 
@@ -82,7 +82,7 @@ export default {
     box-shadow: none;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;    
+    border-bottom: 1px solid #ddd;
     border-radius: 0;
     background: transparent;
     -webkit-box-shdow: none;

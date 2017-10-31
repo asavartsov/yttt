@@ -6,7 +6,7 @@ export default class Messaging {
 
         chrome.runtime.onMessage.addListener(message => {
             let action = _.get(message, 'action');
-            _(this.subscriptions).filter({action: action}).each(s => s.cb(message));
+            _(this.subscriptions).filter({action: action}).each(subscription => subscription.callback(message));
         });
     }
 
@@ -14,7 +14,7 @@ export default class Messaging {
         chrome.runtime.sendMessage(_.extend({action: action}, data));
     }
 
-    subscribe(action, cb) {
-        this.subscriptions.push({action: action, cb: cb});
+    subscribe(action, callback) {
+        this.subscriptions.push({action: action, callback: callback});
     }
 }

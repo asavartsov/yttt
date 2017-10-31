@@ -5,14 +5,14 @@
         <div class="form-group">
             <div class="col-sm-12">
                 <label>{{$l10n('optionsYTAddress')}}</label>
-                <input type="text" class="form-control" v-model="options.baseURL" placeholder="http://youtrack.corp.com">
+                <input type="text" class="form-control" v-model="options.baseURL" :placeholder="$l10n('youtrackExample')">
             </div>
         </div>
         <h2>{{$l10n('optionsFilterTabs')}}</h2>
         <div v-for="(filter, idx) in options.filters" :key="idx" class="form-group">
             <div class="col-sm-6">
                 <input type="text" class="form-control" v-model="filter.title" :placeholder="$l10n('optionsTitle')">
-            </div> 
+            </div>
             <div class="col-sm-6 input-group">
                 <input type="text" class="form-control" v-model="filter.filter" :placeholder="$l10n('optionsFilter')">
                 <div class="input-group-btn">
@@ -39,7 +39,7 @@ export default {
 
     mounted() {
         this.store = new Store();
-        this.store.loadOptions(o => this.options = o);
+        this.store.loadOptions(options => this.options = options);
     },
 
     methods: {

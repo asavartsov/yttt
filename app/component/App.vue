@@ -29,11 +29,11 @@ export default {
 
   mounted() {
     this.store = new Store();
-    this.store.loadOptions(o => { this.filters = o.filters; this.YT.baseURL = o.baseURL; });
-    this.store.loadTasks(null, s => this.tasks = s);
+    this.store.loadOptions(options => { this.filters = options.filters; this.YT.baseURL = options.baseURL; });
+    this.store.loadTasks(null, tasks => this.tasks = tasks);
 
     this.bus.subscribe('updateTaskList', msg => {
-      this.store.loadTasks(msg.key, s => this.tasks[msg.key] = s[msg.key]);
+      this.store.loadTasks(msg.key, tasks => this.tasks[msg.key] = tasks[msg.key]);
     });
   }
 }

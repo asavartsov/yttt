@@ -1,7 +1,7 @@
 import Messaging from './Messaging'
 import L10n from './L10n'
 
-let _defaults = { 
+let _defaults = {
     baseURL: "http://ticket.infolan.org",
     filters: [
         {
@@ -16,19 +16,19 @@ export default class Store {
         this.bus = new Messaging();
     }
 
-    loadOptions(cb) {
-        chrome.storage.sync.get(_defaults, cb);
+    loadOptions(callback) {
+        chrome.storage.sync.get(_defaults, callback);
     }
 
     saveOptions(options) {
         chrome.storage.sync.set(options, () => this.bus.send('optionsSaved', options));
     }
 
-    loadTasks(key, cb) {
-        chrome.storage.local.get(key, cb);
+    loadTasks(key, callback) {
+        chrome.storage.local.get(key, callback);
     }
 
-    saveTasks(key, tasks, cb) {
-        chrome.storage.local.set(_.set({}, key, tasks), cb);
+    saveTasks(key, tasks, callback) {
+        chrome.storage.local.set(_.set({}, key, tasks), callback);
     }
 }
