@@ -58,7 +58,7 @@
     "vinyl-named": "1.x.x",
     "vue": "^2.5.17",
     "vue-loader": "^11.1.4",
-    "vue-nav-tabs": "^0.5.4",
+    "vue-nav-tabs": "^0.5.7",
     "vue-template-compiler": "^2.5.17",
     "vue-bootstrap-typeahead": "^0.2.6",
     "vueify-insert-css": "^1.0.0",

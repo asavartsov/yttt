@@ -3,7 +3,7 @@
   <v-tab v-for="(filter, idx) in filters" :key="idx" :title="filter.title">
     <taskList :tasks="tasks['tasks' + idx]"></taskList>
   </v-tab>
-  <v-tab :title="$l10n('newTaskTab')" id="newTaskTab">
+  <v-tab :title="$l10n('newTaskTab')" id="newTaskTab" v-if="loaded">
     <newTask ref="newTask"></newTask>
   </v-tab>
 </vue-tabs>
@@ -18,7 +18,7 @@ import { VueTabs, VTab } from 'vue-nav-tabs'
 export default {
   data() {
     return {
-      newTaskTab: {},
+      loaded: false,
       tasks: {},
       filters: []
     }
@@ -43,12 +43,20 @@ export default {
 
   mounted() {
     this.store = new Store();
-    this.store.loadOptions(options => { this.filters = options.filters; this.YT.baseURL = options.baseURL; });
+
+    this.store.loadOptions(options => {
+      this.filters = options.filters;
+      this.YT.baseURL = options.baseURL;
+      this.loaded = true;
+    });
+
     this.store.loadTasks(null, tasks => this.tasks = tasks);
 
     this.bus.subscribe('updateTaskList', msg => {
       this.store.loadTasks(msg.key, tasks => this.tasks[msg.key] = tasks[msg.key]);
     });
+
+
   }
 }
 </script>
