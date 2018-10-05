@@ -28,14 +28,14 @@
             </div>
             <div class="row">
                 <div class="col-xs-7">
-                    <button type="button" class="btn btn-primary" @click="saveAndStart">{{$l10n('newTaskSaveAndStart')}}</button>
-                    <button type="button" class="btn btn-default" @click="save">{{$l10n('newTaskSave')}}</button>
+                    <button type="button" class="btn btn-primary" @click="saveAndStart" :disabled="!(project && summary)">{{$l10n('newTaskSaveAndStart')}}</button>
+                    <button type="button" class="btn btn-default" @click="save" :disabled="!(project && summary)">{{$l10n('newTaskSave')}}</button>
                 </div>
                 <div class="col-xs-5">
                     <div class="input-group">
                     <input type="text" class="form-control" :placeholder="$l10n('newTaskTime')" v-model="timeToTrack" @keyup.enter="saveAndTrack">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" @click="saveAndTrack">{{$l10n('newTaskAddTrack')}}</button>
+                        <button class="btn btn-default" type="button" @click="saveAndTrack" :disabled="!timeToTrack">{{$l10n('newTaskAddTrack')}}</button>
                     </span>
                     </div>
                 </div>
