@@ -65,5 +65,29 @@
   },
   "youtrackExample": {
     "message": "http://youtrack.example.com"
+  },
+  "newTaskTab": {
+    "message": "New Task"
+  },
+  "newTaskProject": {
+    "message": "Project"
+  },
+  "newTaskSummary": {
+    "message": "Summary"
+  },
+  "newTaskDescription": {
+    "message": "Description"
+  },
+  "newTaskSaveAndStart": {
+    "message": "Add Task and Start"
+  },
+  "newTaskSave": {
+    "message": "Add Task"
+  },
+  "newTaskTime": {
+    "message": "Time"
+  },
+  "newTaskAddTrack": {
+    "message": "Add and Track"
   }
 }

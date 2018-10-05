@@ -1,19 +1,24 @@
 <template>
-<vue-tabs>
+<vue-tabs @tab-change="handleTabChange">
   <v-tab v-for="(filter, idx) in filters" :key="idx" :title="filter.title">
     <taskList :tasks="tasks['tasks' + idx]"></taskList>
+  </v-tab>
+  <v-tab :title="$l10n('newTaskTab')" id="newTaskTab">
+    <newTask ref="newTask"></newTask>
   </v-tab>
 </vue-tabs>
 </template>
 
 <script>
 import TaskList from './TaskList.vue'
+import NewTask from './NewTask.vue'
 import Store from './Store'
 import { VueTabs, VTab } from 'vue-nav-tabs'
 
 export default {
   data() {
     return {
+      newTaskTab: {},
       tasks: {},
       filters: []
     }
@@ -23,8 +28,17 @@ export default {
 
   components: {
     TaskList,
+    NewTask,
     VueTabs,
     VTab
+  },
+
+  methods: {
+    handleTabChange(tabIndex, newTab, oldTab) {
+      if (newTab.id == "newTaskTab") {
+        this.$refs.newTask.load();
+      }
+    }
   },
 
   mounted() {

@@ -7,6 +7,24 @@ export default class YT {
         this.api = axios.create();
     }
 
+    putIssue(project, summary, description) {
+        let data = {
+            project: project,
+            summary: summary,
+            description: description
+        };
+
+        return this.api
+            .put("rest/issue", qs.stringify(data), {baseURL: this.baseURL})
+            .then(r => r.headers.location.match(/[^\/]+$/)[0]);
+    }
+
+    getProjects() {
+        return this.api
+            .get("rest/project/all", {baseURL: this.baseURL})
+            .then(r => r.data);
+    }
+
     getTasks(filter) {
         return this.api
             .get("rest/issue?" + qs.stringify({max: 100, filter: filter}), {baseURL: this.baseURL})

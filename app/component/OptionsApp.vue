@@ -1,6 +1,5 @@
 <template>
 <div>
-    <h1>{{$l10n('options')}}</h1>
     <form class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-12">
@@ -10,10 +9,10 @@
         </div>
         <h2>{{$l10n('optionsFilterTabs')}}</h2>
         <div v-for="(filter, idx) in options.filters" :key="idx" class="form-group">
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <input type="text" class="form-control" v-model="filter.title" :placeholder="$l10n('optionsTitle')">
             </div>
-            <div class="col-sm-6 input-group">
+            <div class="col-sm-8 input-group">
                 <input type="text" class="form-control" v-model="filter.filter" :placeholder="$l10n('optionsFilter')">
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-danger" @click="removeFilter(idx)" :disabled="idx == 0"><span class="glyphicon glyphicon-minus"></span></button>

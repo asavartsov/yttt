@@ -65,5 +65,29 @@
   },
   "youtrackExample": {
     "message": "http://youtrack.example.com"
+  },
+  "newTaskTab": {
+    "message": "Новая задача"
+  },
+  "newTaskProject": {
+    "message": "Проект"
+  },
+  "newTaskSummary": {
+    "message": "Заголовок"
+  },
+  "newTaskDescription": {
+    "message": "Описание"
+  },
+  "newTaskSaveAndStart": {
+    "message": "Добавить и запустить задачу"
+  },
+  "newTaskSave": {
+    "message": "Добавить задачу"
+  },
+  "newTaskTime": {
+    "message": "Время"
+  },
+  "newTaskAddTrack": {
+    "message": "Добавить и учесть"
   }
 }

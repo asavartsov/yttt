@@ -31,4 +31,12 @@ export default class Store {
     saveTasks(key, tasks, callback) {
         chrome.storage.local.set(_.set({}, key, tasks), callback);
     }
+
+    loadProjectForNewTask(callback) {
+        chrome.storage.local.get(['_projectForNewTask'], p => callback(p._projectForNewTask));
+    }
+
+    saveProjectForNewTask(project) {
+        chrome.storage.local.set({_projectForNewTask: project});
+    }
 }
