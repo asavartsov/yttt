@@ -91,8 +91,13 @@ export default {
         },
 
         toggleTimePanel() {
-            this.timePanel = !this.timePanel;
-            this.$nextTick(() => this.$refs.timeToTrack.focus())
+            if (this.timePanel) {
+                this.timePanel = false;
+            }
+            else {
+                this.timePanel = true;
+                this.$nextTick(() => this.$refs.timeToTrack.focus());
+            }
         },
 
         addTime() {
@@ -262,7 +267,7 @@ export default {
     border-radius: 3px;
     box-shadow: 0 0 3px rgba(0,0,0,0.5);
     background: white;
-    left: -30px;
-    width: 100px;
+    left: -40px;
+    width: 110px;
 }
 </style>
