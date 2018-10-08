@@ -48,6 +48,15 @@
   "taskOpen": {
     "message": "Set as Open"
   },
+  "taskWIP": {
+    "message": "Working on"
+  },
+  "taskAddTime": {
+    "message": "Track Time"
+  },
+  "taskTime": {
+    "message": "Time"
+  },
   "taskNothingFound": {
     "message": "There are no tasks matching given filters"
   },

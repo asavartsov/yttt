@@ -11,7 +11,7 @@
                 <span v-if="assignee">{{assignee}}</span>
                 <span v-for="(tag, idx) in tag" :key="idx" class="tag search-highlight">{{tag.value}}</span>
                 <span v-for="(version, idx) in fixVersions" :key="idx" class="version">{{version}}</span>
-                <span :class="{started: isStarted}" v-if="isStarted">В работе</span>
+                <span :class="{started: isStarted}" v-if="isStarted">{{$l10n('taskWIP')}}</span>
             </div>
         </td>
         <td>
@@ -22,12 +22,25 @@
                 <button type="button" :title="$l10n('taskStop')" class="btn btn-xs btn-danger" @click="stopTimer" v-if="isStarted">
                     <span class="glyphicon glyphicon-stop"></span>
                 </button>
+                <button type="button" :title="$l10n('taskAddTime')" class="btn btn-xs btn-default" @click="toggleTimePanel" :class="{active: timePanel  }">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
                 <button type="button" :title="$l10n('taskOpen')" class="btn btn-xs btn-default" @click="open" v-if="isResolved">
                     <span class="glyphicon glyphicon-flash"></span>
                 </button>
                 <button type="button" :title="$l10n('taskFix')" class="btn btn-xs btn-default" @click="complete" v-else>
                     <span class="glyphicon glyphicon-ok"></span>
                 </button>
+                <div class="time-panel" v-if="timePanel">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" ref="timeToTrack" :placeholder="$l10n('taskTime')" v-model="timeToTrack" @keyup.enter="addTime">
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="button" :disabled="!timeToTrack" @click="addTime" :title="$l10n('taskAddTime')">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
             </div>
             <div class="tags">
                 <span class="timer" :class="{started: isStarted}">{{spent | minutes}}</span>
@@ -44,6 +57,13 @@ export default {
     inject: ['YT', 'bus'],
 
     props: ['id', 'field', 'tag'],
+
+    data() {
+        return {
+            timePanel: false,
+            timeToTrack: ""
+        }
+    },
 
     methods: {
         startTimer() {
@@ -67,6 +87,18 @@ export default {
         open() {
             this.YT
                 .taskCommand(this.id, "state Open")
+                .then(() => this.bus.send('loadTasks'));
+        },
+
+        toggleTimePanel() {
+            this.timePanel = !this.timePanel;
+            this.$nextTick(() => this.$refs.timeToTrack.focus())
+        },
+
+        addTime() {
+            this.YT
+                .taskCommand(this.id, "work " + this.timeToTrack)
+                .then(() => { this.timeToTrack = ""; this.timePanel = false; })
                 .then(() => this.bus.send('loadTasks'));
         },
 
@@ -220,5 +252,17 @@ export default {
 
 .show-stopper {
     border: 1px solid;
+}
+
+.time-panel {
+    position: absolute;
+    z-index: 2;
+    top: 25px;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.5);
+    background: white;
+    left: -30px;
+    width: 100px;
 }
 </style>

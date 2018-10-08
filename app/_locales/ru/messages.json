@@ -48,6 +48,15 @@
   "taskOpen": {
     "message": "Отметить как «Открыта»"
   },
+  "taskWIP": {
+    "message": "В работе"
+  },
+  "taskAddTime": {
+    "message": "Добавить время"
+  },
+  "taskTime": {
+    "message": "Время"
+  },
   "taskNothingFound": {
     "message": "Нет задач, соответствующих фильтру"
   },
