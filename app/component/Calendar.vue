@@ -29,7 +29,7 @@
                         </tr>
                         <tr>
                             <td><b>{{$l10n('calendarTotal')}}</b></td>
-                            <td><b>{{youtrackMinutes(total)}}</b></td>
+                            <td><b>{{youtrackMinutes(dayTotal)}}</b></td>
                         </tr>
                     </tbody>
                 </table>
