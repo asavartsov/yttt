@@ -85,7 +85,7 @@ import _ from 'lodash'
 import L10n from './L10n'
 import Store from './Store'
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import { CalendarView,CalendarViewHeader}  from "vue-simple-calendar"
+import { CalendarView, CalendarViewHeader }  from "vue-simple-calendar"
 import CalendarViewHeaderBootstrap from './CalendarViewHeaderBootstrap.vue'
 
 export default {
@@ -131,7 +131,6 @@ export default {
             if (!this.username) {
                 this.YT.getCurrentUser().then(user => this.username = user.login);
             }
-
         },
 
         getFilter() {
@@ -151,8 +150,6 @@ export default {
                 return Promise.all(tasksWithTime.map(t => this.YT.getWorkItems(t.id)).map(p => p.catch(e => [])));
             }).then(work => {
                 if (tasksLoaded) {
-                    console.log(after);
-
                     let monthStart = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
                     let monthEnd = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 1);
 
@@ -180,8 +177,6 @@ export default {
                     setTimeout(() => this.loadItems(after + 100), 0);
                 }
                 else {
-                    console.log('done', this.tasks);
-
                     this.allEvents = this.workitems.map(item => {
                         let taskId = item.url.match(/rest\/issue\/([\w-]+)\//)[1];
                         let task = _.find(this.tasks, {id: taskId});
