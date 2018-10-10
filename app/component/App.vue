@@ -6,12 +6,16 @@
   <v-tab :title="$l10n('newTaskTab')" id="newTaskTab" v-if="loaded">
     <newTask ref="newTask"></newTask>
   </v-tab>
+  <v-tab :title="$l10n('calendarTab')" id="calendarTab" v-if="loaded">
+    <calendar ref="calendar"></calendar>
+  </v-tab>
 </vue-tabs>
 </template>
 
 <script>
 import TaskList from './TaskList.vue'
 import NewTask from './NewTask.vue'
+import Calendar from './Calendar.vue'
 import Store from './Store'
 import { VueTabs, VTab } from 'vue-nav-tabs'
 
@@ -29,6 +33,7 @@ export default {
   components: {
     TaskList,
     NewTask,
+    Calendar,
     VueTabs,
     VTab
   },
@@ -37,6 +42,10 @@ export default {
     handleTabChange(tabIndex, newTab, oldTab) {
       if (newTab.id == "newTaskTab") {
         this.$refs.newTask.load();
+      }
+
+      if (newTab.id == "calendarTab") {
+        this.$refs.calendar.load();
       }
     }
   },

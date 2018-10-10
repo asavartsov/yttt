@@ -61,6 +61,7 @@
     "vue-nav-tabs": "^0.5.7",
     "vue-template-compiler": "^2.5.17",
     "vue-bootstrap-typeahead": "^0.2.6",
+    "vue-simple-calendar": "^4.1.0",
     "vueify-insert-css": "^1.0.0",
     "webpack": "^2.2.1",
     "webpack-stream": "3.x.x",

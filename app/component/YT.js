@@ -1,5 +1,6 @@
 import axios from 'axios'
 import qs from 'qs'
+import { resolve } from 'path';
 
 export default class YT {
     constructor(baseURL) {
@@ -25,10 +26,19 @@ export default class YT {
             .then(r => r.data);
     }
 
-    getTasks(filter) {
+    getTasks(filter, limits, fields) {
+        limits = limits || {max: 100, after: 0};
+        fields = fields || ['summary', 'Assignee', 'Timer', 'resolved', 'State', 'Timer time', 'Time Spent', 'Fix versions', 'Priority'];
+
         return this.api
-            .get("rest/issue?" + qs.stringify({max: 100, filter: filter}), {baseURL: this.baseURL})
+            .get("rest/issue?" + qs.stringify({max: limits.max, after: limits.after, filter: filter, with: fields}, {indices: false}), {baseURL: this.baseURL})
             .then(r => r.data.issue);
+    }
+
+    getWorkItems(task) {
+        return this.api
+            .get(`/rest/issue/${task}/timetracking/workitem/`, {baseURL: this.baseURL})
+            .then(r => r.data);
     }
 
     taskCommand(id, command, comment) {
@@ -45,6 +55,22 @@ export default class YT {
     getTaskCount(filter) {
         return this.api
             .get("rest/issue/count?" + qs.stringify({filter: filter}), {baseURL: this.baseURL})
-            .then(r => r.data.value);
+            .then(r => r.data.value)
+            .then(count => {
+                if (count >= 0) { return count; }
+                return new Promise(resolve => setTimeout(() => resolve(this.getTaskCount(filter)), 200));
+            });
+    }
+
+    getCurrentUser() {
+        return this.api
+            .get("rest/user/current", {baseURL: this.baseURL})
+            .then(r => r.data);
+    }
+
+    getAllUsers(q) {
+        return this.api
+            .get("rest/admin/user?" + qs.stringify({q: q}), {baseURL: this.baseURL})
+            .then(r => r.data);
     }
 }

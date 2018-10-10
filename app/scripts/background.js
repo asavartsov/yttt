@@ -16,7 +16,7 @@ class Background {
 
     this.bus.subscribe('loadTasks', () => this.loadTasks());
     this.bus.subscribe('optionsSaved', o => this.updateOptions(o));
-    
+
     chrome.browserAction.setBadgeBackgroundColor({color: "#f66"});
     this.store.loadOptions(o => this.updateOptions(o));
   }
@@ -35,7 +35,7 @@ class Background {
         let key = 'tasks' + idx;
         this.store.saveTasks(key, tasks);
         this.bus.send('updateTaskList', {key: key});
-        
+
         if (idx == 0) {
           let active = _.filter(tasks, t => _.chain(t.field).find({name: 'Timer'}).get('value[0]') == "Start");
           chrome.browserAction.setBadgeText({text: active.length > 0 ? "T" : ""});
@@ -48,7 +48,7 @@ class Background {
     chrome.tabs.query({url: this.client.baseURL + '/*'}, t => {
       if (!_.isEmpty(t)) {
         _innerFn();
-      }      
+      }
     });
   }
 }

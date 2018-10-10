@@ -1,5 +1,5 @@
 <template lang="html">
-<div>
+<div class="task-list">
   <input type="text" class="form-control input-sm search" v-model="search" :placeholder="$l10n('search')">
   <table class="table table-hover table-bordered">
     <tbody>
@@ -73,7 +73,7 @@ export default {
 </script>
 
 <style lang="css">
-  .tab-container .table-bordered {
+  .task-list .table-bordered {
     border: 0;
   }
 

@@ -98,5 +98,35 @@
   },
   "newTaskAddTrack": {
     "message": "Add and Track"
+  },
+  "calendarTab": {
+    "message": "Calendar"
+  },
+  "calendarTask": {
+    "message": "Task"
+  },
+  "calendarTime": {
+    "message": "Time"
+  },
+  "calendarTotal": {
+    "message": "Total"
+  },
+  "calendarLoading": {
+    "message": "Loading..."
+  },
+  "calendarUser": {
+    "message": "Username"
+  },
+  "calendarLoad": {
+    "message": "Load Work"
+  },
+  "calendarToday": {
+    "message": "Today"
+  },
+  "calendarMonth": {
+    "message": "Month"
+  },
+  "calendarLoadingTaskCount": {
+    "message": "Loaing task count..."
   }
 }

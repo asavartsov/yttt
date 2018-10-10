@@ -98,5 +98,35 @@
   },
   "newTaskAddTrack": {
     "message": "Добавить и учесть"
+  },
+  "calendarTab": {
+    "message": "Календарь"
+  },
+  "calendarTask": {
+    "message": "Задача"
+  },
+  "calendarTime": {
+    "message": "Время"
+  },
+  "calendarTotal": {
+    "message": "Всего"
+  },
+  "calendarLoading": {
+    "message": "Загрузка..."
+  },
+  "calendarUser": {
+    "message": "Пользователь"
+  },
+  "calendarLoad": {
+    "message": "Загрузить работу"
+  },
+  "calendarToday": {
+    "message": "Сегодня"
+  },
+  "calendarMonth": {
+    "message": "Месяц"
+  },
+  "calendarLoadingTaskCount": {
+    "message": "Загрузка количества задач..."
   }
 }

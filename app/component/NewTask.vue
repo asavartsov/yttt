@@ -4,7 +4,7 @@
             <div class="form-group new-task-project">
                 <label>{{$l10n('newTaskProject')}}</label>
                 <vue-bootstrap-typeahead
-                    v-model="selectedProjectName"
+                    v-model="projectSearch"
                     :data="projects"
                     :placeholder="this.projectName(this.project) || $l10n('newTaskProject')"
                     :serializer="s => projectName(s)"
@@ -33,10 +33,10 @@
                 </div>
                 <div class="col-xs-5">
                     <div class="input-group">
-                    <input type="text" class="form-control" :placeholder="$l10n('newTaskTime')" v-model="timeToTrack" @keyup.enter="saveAndTrack">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" @click="saveAndTrack" :disabled="!timeToTrack">{{$l10n('newTaskAddTrack')}}</button>
-                    </span>
+                        <input type="text" class="form-control" :placeholder="$l10n('newTaskTime')" v-model="timeToTrack" @keyup.enter="saveAndTrack">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" @click="saveAndTrack" :disabled="!timeToTrack">{{$l10n('newTaskAddTrack')}}</button>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@ export default {
             timeToTrack: "",
             summary: "",
             description: "",
-            selectedProjectName: "",
+            projectSearch: "",
             project: "",
             projects: []
         }
@@ -72,14 +72,14 @@ export default {
 
     mounted() {
         this.store = new Store();
-        this.store.loadProjectForNewTask(project => this.project = project);
+        this.store.loadByKey('_projectForNewTask', project => this.project = project);
         this.$el.querySelectorAll('.new-task-project .input-group').forEach(e => e.classList.remove('input-group'));
     },
 
     methods: {
         saveAction() {
             this.error = false;
-            this.store.saveProjectForNewTask(this.project);
+            this.store.saveByKey('_projectForNewTask', this.project);
 
             return this.YT.putIssue(this.project.shortName, this.summary, this.description)
                 .then(task => this.lastTaskId = task)
