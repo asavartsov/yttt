@@ -61,20 +61,17 @@
         </div>
 
         <div class="input-group user-search">
-            <!-- <span class="input-group-addon" v-if="loading"><b>{{$l10n('calendarLoading')}}</b></span> -->
             <span class="input-group-addon"><b>{{$l10n('calendarTotal')}}: {{youtrackMinutes(total)}}</b></span>
 
             <vue-bootstrap-typeahead
-                v-model="userSearch"
+                v-model="username"
                 :data="users"
                 :placeholder="this.username || $l10n('calendarUser')"
-                @hit="username = $event"
                 :minMatchingChars="1" />
 
-            <!-- <input type="text" class="form-control" :placeholder="$l10n('calendarUser')" v-model="username" @keyup.enter="loadWorkItems" :disabled="loading"> -->
             <span class="input-group-addon checkbox-addon">
                 <input type="checkbox" id="assignedOnly" v-model="assignedOnly" :disabled="loading">
-                <label for="assignedOnly">Assigned Only</label>
+                <label for="assignedOnly">{{$l10n('calendarAssignedOnly')}}</label>
             </span>
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" @click="loadWorkItems" :disabled="!username || loading">{{$l10n('calendarLoad')}}</button>
@@ -106,7 +103,6 @@ export default {
             today: new Date(),
             dayViewDate: null,
             dayView: false,
-            userSearch: "",
             username: "",
             monthViewEvents: [],
             dayViewEvents: [],
@@ -158,7 +154,7 @@ export default {
                     console.log(after);
 
                     let monthStart = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
-                    let monthEnd = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
+                    let monthEnd = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 1);
 
                     let workitems = _.chain(work)
                         .flatten()
@@ -269,7 +265,7 @@ export default {
     },
 
     watch: {
-        userSearch: _.debounce(function(query) { this.getUsers(query) }, 200)
+        username: _.debounce(function(query) { this.getUsers(query) }, 200)
     },
 
     computed: {

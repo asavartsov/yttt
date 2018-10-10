@@ -128,5 +128,8 @@
   },
   "calendarLoadingTaskCount": {
     "message": "Загрузка количества задач..."
+  },
+  "calendarAssignedOnly": {
+    "message": "Назначенные"
   }
 }

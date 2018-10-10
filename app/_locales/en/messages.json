@@ -128,5 +128,8 @@
   },
   "calendarLoadingTaskCount": {
     "message": "Loaing task count..."
+  },
+  "calendarAssignedOnly": {
+    "message": "Assigned Only"
   }
 }
