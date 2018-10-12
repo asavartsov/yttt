@@ -1,6 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import { resolve } from 'path';
+import { rejects } from 'assert';
 
 export default class YT {
     constructor(baseURL) {
@@ -28,7 +29,7 @@ export default class YT {
 
     getTasks(filter, limits, fields) {
         limits = limits || {max: 100, after: 0};
-        fields = fields || ['summary', 'Assignee', 'Timer', 'resolved', 'State', 'Timer time', 'Time Spent', 'Fix versions', 'Priority'];
+        fields = fields || ['summary', 'Assignee', 'Timer', 'resolved', 'State', 'Timer time', 'Time Spent', 'Fix versions', 'Priority', 'projectShortName'];
 
         return this.api
             .get("rest/issue?" + qs.stringify({max: limits.max, after: limits.after, filter: filter, with: fields}, {indices: false}), {baseURL: this.baseURL})
@@ -71,6 +72,35 @@ export default class YT {
     getAllUsers(q) {
         return this.api
             .get("rest/admin/user?" + qs.stringify({q: q}), {baseURL: this.baseURL})
+            .then(r => r.data);
+    }
+
+    getAllUsersInGroup(group) {
+        return new Promise((resolve, reject) => {
+            let users = [];
+
+            let _req = (start) => {
+                this.api
+                    .get("rest/admin/user?" + qs.stringify({group: group, start: start}), {baseURL: this.baseURL})
+                    .then(r => {
+                        if (r.data.length > 0) {
+                            users = users.concat(r.data);
+                            setTimeout(() => _req(start + 10), 0);
+                        }
+                        else {
+                            resolve(_.uniqBy(users, 'login'));
+                        }
+                    })
+                    .catch(e => reject(e));
+            };
+
+            _req(0);
+        });
+    }
+
+    getUserGroups() {
+        return this.api
+            .get("rest/admin/group", {baseURL: this.baseURL})
             .then(r => r.data);
     }
 }

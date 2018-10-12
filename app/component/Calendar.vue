@@ -1,54 +1,14 @@
 <template>
     <div class="container calendar">
-
-        <div class="theme-default" v-if="dayView">
-            <div class="cv-header">
-                <div class="cv-header-nav btn-group btn-group-xs">
-                    <button class="btn btn-default" type="button" @click="showMonthView">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                        {{$l10n('calendarMonth')}}
-                    </button>
-                </div>
-                <div class="periodLabel">{{dayViewDate.toDateString()}}</div>
-            </div>
-        </div>
-
         <div class="form-group">
-            <div v-if="dayView">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th>{{$l10n('calendarTask')}}</th>
-                            <th>{{$l10n('calendarTime')}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(event, idx) in dayViewEvents" :key="idx">
-                            <td><a :href="event.url" target="_blank">{{event.taskId}}</a> {{event.summary}}</td>
-                            <td>{{youtrackMinutes(event.duration)}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>{{$l10n('calendarTotal')}}</b></td>
-                            <td><b>{{youtrackMinutes(dayTotal)}}</b></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <calendar-view
-                class="theme-default"
-                :show-date="today"
-                :startingDayOfWeek="1"
-                :events="monthViewEvents"
-                :disableFuture="true"
-                @click-event="showDayView"
-                v-else>
-                <calendar-view-header-bootstrap
-                    slot="header"
-                    slot-scope="t"
-                    :header-props="t.headerProps"
-                    @input="setCalendarDate" />
-            </calendar-view>
+            <work-item-calendar
+                :show-header="true"
+                :initialDate="today"
+                :monthViewEvents="monthViewEvents"
+                :allEvents="allEvents"
+                :tasks="tasks"
+                @dateChanged="(date) => this.today = date" >
+            </work-item-calendar>
         </div>
 
         <div class="form-group" v-if="loading">
@@ -74,6 +34,9 @@
                 <label for="assignedOnly">{{$l10n('calendarAssignedOnly')}}</label>
             </span>
             <span class="input-group-btn">
+                <button class="btn btn-default" type="button" @click="openTimeReport" v-if="isAdmin">
+                    <span class="glyphicon glyphicon-stats"></span>
+                </button>
                 <button class="btn btn-primary" type="button" @click="loadWorkItems" :disabled="!username || loading">{{$l10n('calendarLoad')}}</button>
             </span>
         </div>
@@ -85,30 +48,26 @@ import _ from 'lodash'
 import L10n from './L10n'
 import Store from './Store'
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import { CalendarView, CalendarViewHeader }  from "vue-simple-calendar"
-import CalendarViewHeaderBootstrap from './CalendarViewHeaderBootstrap.vue'
+import WorkItemCalendar from './WorkItemCalendar.vue';
 
 export default {
     inject: ['YT', 'bus'],
 
     components: {
-        CalendarView,
-		CalendarViewHeaderBootstrap,
+        WorkItemCalendar,
         VueBootstrapTypeahead
     },
 
     data() {
         return {
             users: [],
+            isAdmin: false,
             today: new Date(),
-            dayViewDate: null,
-            dayView: false,
             username: "",
             monthViewEvents: [],
             dayViewEvents: [],
             allEvents: [],
             total: 0,
-            dayTotal: 0,
             error: false,
             loading: false,
             assignedOnly: true,
@@ -131,6 +90,12 @@ export default {
             if (!this.username) {
                 this.YT.getCurrentUser().then(user => this.username = user.login);
             }
+
+            this.YT.getUserGroups().then(() => this.isAdmin = true)
+        },
+
+        openTimeReport() {
+            chrome.tabs.create({ url: chrome.runtime.getURL("pages/calendar.html") });
         },
 
         getFilter() {
@@ -146,7 +111,7 @@ export default {
             this.YT.getTasks(this.getFilter(), {max: 100, after: after}).then(tasks => {
                 tasksLoaded = tasks.length > 0;
                 let tasksWithTime = tasks.filter(t => this.getField(t, "Time Spent"));
-                this.tasks = this.tasks.concat(tasksWithTime);
+                this.tasks = _.uniqBy(this.tasks.concat(tasksWithTime), 'id');
                 return Promise.all(tasksWithTime.map(t => this.YT.getWorkItems(t.id)).map(p => p.catch(e => [])));
             }).then(work => {
                 if (tasksLoaded) {
@@ -162,7 +127,7 @@ export default {
                         .filter(item => item.author.login == this.username && _.inRange(item.day, monthStart, monthEnd))
                         .value();
 
-                    this.workitems = this.workitems.concat(workitems);
+                    this.workitems = _.uniqBy(this.workitems.concat(workitems), 'id');
 
                     this.monthViewEvents = _.chain(this.workitems)
                         .groupBy('day')
@@ -180,7 +145,7 @@ export default {
                     this.allEvents = this.workitems.map(item => {
                         let taskId = item.url.match(/rest\/issue\/([\w-]+)\//)[1];
                         let task = _.find(this.tasks, {id: taskId});
-                        let summary = this.truncateString(this.getField(task, 'summary'), 50);
+                        let summary = this.getField(task, 'summary');
 
                         return {
                             day: item.day,
@@ -191,7 +156,6 @@ export default {
                         };
                     });
 
-                    this.showMonthView();
                     this.loading = false;
                 }
             })
@@ -213,26 +177,8 @@ export default {
             this.YT.getTaskCount(this.getFilter()).then(count => this.tasksTotal = count).then(() => this.loadItems(0));
         },
 
-        setCalendarDate(date) {
-            this.today = date;
-        },
-
-        showDayView(dateOrEvent) {
-            let day = (dateOrEvent instanceof Date) ? dateOrEvent : dateOrEvent.startDate;
-
-            this.dayView = true;
-            this.dayViewDate = day;
-            this.dayViewEvents = this.allEvents.filter(e => e.day.getTime() == day.getTime());
-            this.dayTotal = _.sumBy(this.dayViewEvents, 'duration');
-        },
-
-        showMonthView() {
-            this.dayViewEvents = [];
-            this.dayView = false;
-        },
-
         youtrackMonth(date) {
-            return date.getFullYear() + '-'  + ("0" + (date.getMonth() + 1)).slice(-2);
+            return date.getFullYear() + '-' + _.padStart(date.getMonth() + 1, 2, 0);
         },
 
         youtrackMinutes: function(m) {
@@ -248,10 +194,6 @@ export default {
             }
 
             return value;
-        },
-
-        truncateString(text, max) {
-            return text.substr(0, max - 1) + (text.length > max ? '...' : '');
         },
 
         getUsers(query) {
@@ -276,40 +218,13 @@ export default {
 </script>
 
 <style lang="css">
-    @import url('../../node_modules/vue-simple-calendar/static/css/default.css');
-
     .container {
         margin: 15px 0;
     }
 
-    .vbt-autcomplete-list {
-        max-height: 250px !important;
-    }
-
     .calendar .vbt-autcomplete-list {
+        max-height: 250px !important;
         bottom: 20px;
-    }
-
-    .container > .input-group:first-child {
-        margin-bottom: 15px;
-    }
-
-    .container > .input-group:last-child {
-        margin-top: 15px;
-    }
-
-    .container .pointer {
-        cursor: pointer;
-    }
-
-    .theme-default .cv-day.past,
-    .theme-default .cv-day.future {
-        background-color: white;
-    }
-
-    .theme-default .cv-day.outsideOfMonth {
-        background: whitesmoke;
-        color: #dadada;
     }
 
     .checkbox-addon input,
