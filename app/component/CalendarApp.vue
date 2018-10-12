@@ -12,7 +12,14 @@
             :maxMatches='50'
             :minMatchingChars='1'></vue-bootstrap-typeahead>
         <span class="input-group-addon">{{$l10n('timeReportsMonth')}}</span>
-        <datepicker format="MMM yyyy" v-model="today" input-class="form-control" :minimumView="'month'" :maximumView="'month'"></datepicker>
+        <datepicker
+            format="MMM yyyy"
+            v-model="today"
+            input-class="form-control"
+            :minimumView="'month'"
+            :maximumView="'month'"
+            :disabled="loading">
+        </datepicker>
         <span class="input-group-btn">
             <button class="btn btn-primary" @click="load" :disabled="loading || (users.length == 0)">{{$l10n('timeReportsLoad')}}</button>
             <button class="btn btn-default" @click="exportCSV" :disabled="loading || (workitems.length == 0)">{{$l10n('timeReportsCSV')}}</button>
@@ -132,6 +139,8 @@ export default {
 
     methods: {
         loadUsers(group) {
+            if (this.loading) return;
+
             this.users = [];
             this.group = group;
 
