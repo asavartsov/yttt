@@ -156,6 +156,18 @@
   "timeReportsCalendars": {
     "message": "Calendars"
   },
+  "timeReportsLoadingUsers": {
+    "message": "Loading users list..."
+  },
+  "timeReportsNoUsers": {
+    "message": "There are no users in the selected group or no user group selected"
+  },
+  "timeReportsInfo": {
+    "message": "The report is ready to be loaded. Loading might take a while depending on amount of issues in time range of selected month and today. List of users in the selected group:"
+  },
+  "timeReportsNoWorkitems": {
+    "message": "There are no workitems matching the given group and month combination"
+  },
   "loadError": {
     "message": "Error loading data from server"
   },

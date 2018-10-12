@@ -4,11 +4,11 @@
     <div class="form-group input-group typeahead-group">
         <span class="input-group-addon">{{$l10n('timeReportsUserGroup')}}</span>
         <vue-bootstrap-typeahead
-            @hit="loadUsers"
+            @hit="loadUsers($event.name)"
             :data="groups"
             :serializer="s => s.name"
-            v-model="selectedGroupName"
-            :placeholder="selectedGroupName || $l10n('timeReportsUserGroup')"
+            v-model="groupSearch"
+            :placeholder="group || $l10n('timeReportsUserGroup')"
             :maxMatches='50'
             :minMatchingChars='1'></vue-bootstrap-typeahead>
         <span class="input-group-addon">{{$l10n('timeReportsMonth')}}</span>
@@ -22,7 +22,8 @@
     <div class="form-group" v-if="loading">
         <div class="progress">
             <div class="progress-bar" :class="{'progress-bar-striped': tasksTotal == 0, active: tasksTotal == 0}" role="progressbar" :style="{width: progress + '%'}">
-                <span v-if='tasksTotal == 0'>{{$l10n('calendarLoadingTaskCount')}}</span>
+                <span v-if='users.length == 0'>{{$l10n('timeReportsLoadingUsers')}}</span>
+                <span v-else-if='tasksTotal == 0'>{{$l10n('calendarLoadingTaskCount')}}</span>
                 <span v-else>{{tasksProcessed}}/{{tasksTotal}}</span>
             </div>
         </div>
@@ -30,6 +31,18 @@
 
     <div v-if="error" class="alert alert-danger">
         <p>{{$l10n('loadError')}}</p>
+    </div>
+
+    <div v-if="!loading">
+        <div v-if="users.length == 0" class="alert alert-warning">
+            <p>{{$l10n('timeReportsNoUsers')}}</p>
+        </div>
+        <div v-else-if="workitems.length == 0" class="alert" :class="{'alert-warning': !showInfo, 'alert-info': showInfo}">
+            <p>{{$l10n(showInfo ? 'timeReportsInfo' : 'timeReportsNoWorkitems')}}</p>
+            <ul v-if="showInfo">
+                <li v-for="user in this.users" :key="user.login">{{user.fullName}} ({{user.login}})</li>
+            </ul>
+        </div>
     </div>
 
     <vue-tabs v-if="workitems.length > 0">
@@ -97,11 +110,12 @@ export default {
             workitems: [],
             loaded: false,
             loading: false,
+            showInfo: false,
             tasksLoaded: 0,
             tasksProcessed: 0,
             tasksTotal: 0,
-            selectedGroup: {},
-            selectedGroupName: ''
+            groupSearch: '',
+            group: ''
         }
     },
 
@@ -119,16 +133,18 @@ export default {
     methods: {
         loadUsers(group) {
             this.users = [];
-            this.selectedGroup = group;
-            let groupName = _.get(group, 'name');
+            this.group = group;
 
-            if (groupName) {
+            if (this.group) {
                 this.error = false;
+                this.loading = true;
+                this.clearWorkitems();
 
                 this.YT
-                    .getAllUsersInGroup(group.name)
+                    .getAllUsersInGroup(this.group)
                     .then(users => Promise.all(users.map(u => this.YT.getUser(u.login))))
                     .then(users => this.users = users)
+                    .then(() => this.loading = false)
                     .catch(e => this.error = true);
             }
         },
@@ -275,20 +291,27 @@ export default {
 
                     this.processWorkItems();
                     this.loading = false;
+                    this.showInfo = false;
                 }
             });
         },
 
-        load() {
-            this.error = false;
-            this.loading = true;
+        clearWorkitems() {
             this.tasksLoaded = 0;
             this.tasksProcessed = 0;
             this.tasks = [];
             this.workitems = [];
             this.workitemsByUser = [];
+            this.workitemsByProject = [];
             this.tasksTotal = 0;
-            this.store.saveByKey('_timeReportGroup', this.selectedGroupName);
+            this.showInfo = true;
+        },
+
+        load() {
+            this.error = false;
+            this.loading = true;
+            this.clearWorkitems();
+            this.store.saveByKey('_timeReportGroup', this.group);
 
             this.YT
                 .getTaskCount(this.getFilter())
@@ -300,7 +323,7 @@ export default {
         exportCSV() {
             let csv = papaparse.unparse(_.map(this.workitems, o => _.extend({}, o, {day: this.excelDate(o.day)})));
 
-            let filename = _.chain(this.selectedGroupName)
+            let filename = _.chain(this.group)
                 .truncate(30, {omission: ''})
                 .kebabCase()
                 .value() + '-' + this.youtrackMonth(this.today) + '.csv';
@@ -382,7 +405,7 @@ export default {
             ])
             .then(() => {
                 this.loaded = true;
-                this.store.loadByKey('_timeReportGroup', g => this.selectedGroupName = g);
+                this.store.loadByKey('_timeReportGroup', g => this.loadUsers(g));
                 this.$nextTick(() => this._fixTypeahead());
             })
             .catch(e => this.error = true);
@@ -396,15 +419,8 @@ export default {
     },
 
     watch: {
-        selectedMonth: function(m) {
-            this.today = m.toDate();
-        },
-
-        selectedGroupName: function(groupName) {
-            if (_.get(this.selectedGroup, 'name') != groupName) {
-                let group = _.find(this.groups, {name: groupName});
-                this.loadUsers(group);
-            }
+        today: function() {
+            this.clearWorkitems();
         }
     }
 }

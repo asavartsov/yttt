@@ -1,16 +1,20 @@
 <template>
     <div>
         <div v-if="taskView">
-            <div class="title-header">
+            <div class="task-view-title-header">
                 <button class="btn btn-default btn-xs" @click="showFullView"><span class="glyphicon glyphicon-chevron-left"></span> {{title}}</button>
-                <span class="title">{{taskViewEntity.subTitle}}</span>
+                <span class="task-view-title">{{taskViewEntity.subTitle}}</span>
             </div>
-            <work-item-calendar-tasks-view :task-view-events="taskViewEntity.tasks" :task-view-events-total="taskViewEntity.duration" :truncate-length="100"></work-item-calendar-tasks-view>
+            <work-item-calendar-tasks-view
+                :task-view-events="taskViewEntity.tasks"
+                :task-view-events-total="taskViewEntity.duration"
+                :truncate-length="500">
+            </work-item-calendar-tasks-view>
         </div>
         <table class="table table-hover table-bordered" v-else>
             <thead>
                 <tr>
-                    <th>{{title}} <span class="subtitle">{{subTitle}}</span></th>
+                    <th>{{title}} <span class="task-view-subtitle">{{subTitle}}</span></th>
                     <th>{{youtrackMinutes(total)}}</th>
                 </tr>
             </thead>
@@ -65,19 +69,19 @@ export default {
 </script>
 
 <style lang="css">
-    .title-header {
+    .task-view-title-header {
         padding: 8px;
         font-weight: bold;
         border: 1px solid #ddd;
         background: #ececec;
     }
 
-    .title {
+    .task-view-title {
         padding-left: 10px;
         vertical-align: middle;
     }
 
-    .subtitle {
+    .task-view-subtitle {
         font-weight: normal;
         color: #444;
     }
