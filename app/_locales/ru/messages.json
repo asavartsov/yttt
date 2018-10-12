@@ -131,5 +131,38 @@
   },
   "calendarAssignedOnly": {
     "message": "Назначенные"
+  },
+  "timeReports": {
+    "message": "Отчеты по времени"
+  },
+  "timeReportsUserGroup": {
+    "message": "Группа"
+  },
+  "timeReportsMonth": {
+    "message": "Месяц"
+  },
+  "timeReportsLoad": {
+    "message": "Загрузить отчеты"
+  },
+  "timeReportsCSV": {
+    "message": "CSV"
+  },
+  "timeReportsProjects": {
+    "message": "Проекты"
+  },
+  "timeReportsUsers": {
+    "message": "Пользователи"
+  },
+  "timeReportsCalendars": {
+    "message": "Календари"
+  },
+  "loadError": {
+    "message": "При загрузке данных произошла ошибка"
+  },
+  "taskError": {
+    "message": "При создании или изменении задачи произошла ошибка"
+  },
+  "taskAdded": {
+    "message": "Добавлена задача"
   }
 }

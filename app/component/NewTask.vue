@@ -21,10 +21,10 @@
                 <textarea class="form-control" rows="5" v-model="description" :placeholder="$l10n('newTaskDescription')"></textarea>
             </div>
             <div v-if="lastTaskId" class="alert alert-info">
-                <p>Добавлена задача <a :href="this.YT.baseURL + '/issue/' + this.lastTaskId" target="_blank">{{this.lastTaskId}}</a></p>
+                <p>{{$l10n('taskAdded')}} <a :href="this.YT.baseURL + '/issue/' + this.lastTaskId" target="_blank">{{this.lastTaskId}}</a></p>
             </div>
             <div v-if="error" class="alert alert-danger">
-                <p>При создании или изменении задачи возникла ошибка</p>
+                <p>{{$l10n('taskError')}}</p>
             </div>
             <div class="row">
                 <div class="col-xs-7">

@@ -1,21 +1,21 @@
 <template>
-<div v-if="loaded" class="time-reports">
-    <h1>Time Reports</h1>
+<div v-if="loaded || error" class="time-reports">
+    <h1>{{$l10n('timeReports')}}</h1>
     <div class="form-group input-group typeahead-group">
-        <span class="input-group-addon">User Group</span>
+        <span class="input-group-addon">{{$l10n('timeReportsUserGroup')}}</span>
         <vue-bootstrap-typeahead
-            @hit="loadUsers($event.name)"
+            @hit="loadUsers"
             :data="groups"
             :serializer="s => s.name"
-            v-model="selectedGroup"
-            :placeholder="selectedGroup || 'User Group'"
+            v-model="selectedGroupName"
+            :placeholder="selectedGroupName || $l10n('timeReportsUserGroup')"
             :maxMatches='50'
             :minMatchingChars='1'></vue-bootstrap-typeahead>
-        <span class="input-group-addon">Month</span>
+        <span class="input-group-addon">{{$l10n('timeReportsMonth')}}</span>
         <datepicker format="MMM yyyy" v-model="today" input-class="form-control" :minimumView="'month'" :maximumView="'month'"></datepicker>
         <span class="input-group-btn">
-            <button class="btn btn-primary" @click="load" :disabled="loading || (users.length == 0)">Load Report</button>
-            <button class="btn btn-default" @click="exportCSV" :disabled="loading || (workitems.length == 0)">CSV</button>
+            <button class="btn btn-primary" @click="load" :disabled="loading || (users.length == 0)">{{$l10n('timeReportsLoad')}}</button>
+            <button class="btn btn-default" @click="exportCSV" :disabled="loading || (workitems.length == 0)">{{$l10n('timeReportsCSV')}}</button>
         </span>
     </div>
 
@@ -28,48 +28,37 @@
         </div>
     </div>
 
+    <div v-if="error" class="alert alert-danger">
+        <p>{{$l10n('loadError')}}</p>
+    </div>
+
     <vue-tabs v-if="workitems.length > 0">
-        <v-tab title="Projects">
+        <v-tab :title="$l10n('timeReportsProjects')">
             <div v-for="(item, idx) in workitemsByProject" :key="'project-' + idx">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th>{{item.project}}</th>
-                            <th>{{youtrackMinutes(item.total)}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(user, idx) in item.userViewEvents" :key="'project-user-' + idx">
-                            <td>{{user.username}}</td>
-                            <td>{{user.duration}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <time-report-table-view
+                    :title="item.project"
+                    :sub-title="youtrackProjectName(item.project)"
+                    :total="item.total"
+                    :entity-view-events="item.userViewEvents">
+                </time-report-table-view>
             </div>
         </v-tab>
 
-        <v-tab title="Users">
+        <v-tab :title="$l10n('timeReportsUsers')">
             <div v-for="(item, idx) in workitemsByUser" :key="'user-' + idx">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th>{{item.username}}</th>
-                            <th>{{youtrackMinutes(item.total)}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(project, idx) in item.projectViewEvents" :key="'user-project-' + idx">
-                            <td>{{project.project}}</td>
-                            <td>{{project.duration}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <time-report-table-view
+                    :title="item.username"
+                    :sub-title="youtrackUserName(item.username)"
+                    :total="item.total"
+                    :entity-view-events="item.projectViewEvents">
+                </time-report-table-view>
+
             </div>
         </v-tab>
 
-        <v-tab title="Calendars">
+        <v-tab :title="$l10n('timeReportsCalendars')">
             <div v-for="(item, idx) in workitemsByUser" :key="'calendar' + idx" class="user-calendar">
-                <div class="calendar-header">{{item.username}}</div>
+                <div class="calendar-header">{{youtrackUserName(item.username)}}</div>
 
                 <work-item-calendar
                     :initialDate="today"
@@ -86,6 +75,7 @@
 <script>
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 import WorkItemCalendar from './WorkItemCalendar.vue'
+import TimeReportTableView from './TimeReportTableView.vue'
 import Store from './Store'
 import L10n from './L10n'
 import moment from 'moment'
@@ -96,6 +86,8 @@ import papaparse from 'papaparse'
 export default {
     data() {
         return {
+            error: false,
+            projects: [],
             groups: [],
             users: [],
             workitemsByUser: [],
@@ -108,13 +100,15 @@ export default {
             tasksLoaded: 0,
             tasksProcessed: 0,
             tasksTotal: 0,
-            selectedGroup: ''
+            selectedGroup: {},
+            selectedGroupName: ''
         }
     },
 
     inject: ['YT'],
 
     components: {
+        TimeReportTableView,
         VueBootstrapTypeahead,
         WorkItemCalendar,
         Datepicker,
@@ -124,13 +118,43 @@ export default {
 
     methods: {
         loadUsers(group) {
-            this.store.saveByKey('_timeReportGroup', group);
-            this.YT.getAllUsersInGroup(group).then(users => this.users = _.map(users, 'login'));
+            this.users = [];
+            this.selectedGroup = group;
+            let groupName = _.get(group, 'name');
+
+            if (groupName) {
+                this.error = false;
+
+                this.YT
+                    .getAllUsersInGroup(group.name)
+                    .then(users => Promise.all(users.map(u => this.YT.getUser(u.login))))
+                    .then(users => this.users = users)
+                    .catch(e => this.error = true);
+            }
         },
 
         getFilter() {
             let period = this.youtrackMonth(this.today);
             return `${this.assignedOnly ? '#' + this.username : ''} updated: ${period} .. ${this.youtrackMonth(new Date())}`;
+        },
+
+        aggregateTasks(username, project) {
+            return _.chain(this.workitems)
+                .filter({username: username, project: project})
+                .groupBy('taskId')
+                .map((v, k) => {
+                    let duration = _.sumBy(v, 'duration');
+                    let task = _.find(this.tasks, {id: k});
+                    let summary = this.getField(task, 'summary');
+
+                    return {
+                        taskId: k,
+                        username: username,
+                        duration: duration,
+                        summary: summary,
+                        url: this.YT.baseURL + '/issue/' + k
+                    }
+                }).value();
         },
 
         processWorkItems() {
@@ -149,7 +173,12 @@ export default {
                     .groupBy('project')
                     .map((v, k) => {
                         let duration = _.sumBy(v, 'duration');
-                        return { project: k, duration: this.youtrackMinutes(duration) };
+                        return {
+                            title: k,
+                            subTitle: this.youtrackProjectName(k),
+                            duration: duration,
+                            tasks: this.aggregateTasks(username, k)
+                        };
                     })
                     .sortBy('project')
                     .value();
@@ -174,7 +203,12 @@ export default {
                     .groupBy('username')
                     .map((v, k) => {
                         let duration = _.sumBy(v, 'duration');
-                        return { username: k, duration: this.youtrackMinutes(duration) };
+                        return {
+                            title: k,
+                            subTitle: this.youtrackUserName(k),
+                            duration: duration,
+                            tasks: this.aggregateTasks(k, project)
+                        };
                     })
                     .sortBy('username')
                     .value();
@@ -199,7 +233,7 @@ export default {
             let monthStart = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
             let monthEnd = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 1);
 
-            this.YT.getTasks(this.getFilter(), {max: 100, after: after}).then(tasks => {
+            return this.YT.getTasks(this.getFilter(), {max: 100, after: after}).then(tasks => {
                 tasksLoaded = tasks.length > 0;
                 let tasksWithTime = tasks.filter(t => this.getField(t, "Time Spent"));
                 this.tasks = this.tasks.concat(tasksWithTime);
@@ -212,7 +246,7 @@ export default {
                             let date = new Date(item.date);
                             item.day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                         })
-                        .filter(item => _.includes(this.users, item.author.login) && _.inRange(item.day, monthStart, monthEnd))
+                        .filter(item => _.find(this.users, {login: item.author.login}) && _.inRange(item.day, monthStart, monthEnd))
                         .map(item => {
                             let taskId = item.url.match(/rest\/issue\/([\w-]+)\//)[1];
                             let task = _.find(this.tasks, {id: taskId});
@@ -246,6 +280,7 @@ export default {
         },
 
         load() {
+            this.error = false;
             this.loading = true;
             this.tasksLoaded = 0;
             this.tasksProcessed = 0;
@@ -253,14 +288,19 @@ export default {
             this.workitems = [];
             this.workitemsByUser = [];
             this.tasksTotal = 0;
+            this.store.saveByKey('_timeReportGroup', this.selectedGroupName);
 
-            this.YT.getTaskCount(this.getFilter()).then(count => this.tasksTotal = count).then(() => this.loadTasks(0));
+            this.YT
+                .getTaskCount(this.getFilter())
+                .then(count => this.tasksTotal = count)
+                .then(() => this.loadTasks(0))
+                .catch(e => { this.error = true; this.loading = false; });
         },
 
         exportCSV() {
             let csv = papaparse.unparse(_.map(this.workitems, o => _.extend({}, o, {day: this.excelDate(o.day)})));
 
-            let filename = _.chain(this.selectedGroup)
+            let filename = _.chain(this.selectedGroupName)
                 .truncate(30, {omission: ''})
                 .kebabCase()
                 .value() + '-' + this.youtrackMonth(this.today) + '.csv';
@@ -301,6 +341,16 @@ export default {
             return ((hours > 0) ? hours + L10n.l10n('h') : '') + m % 60 + L10n.l10n('m')
         },
 
+        youtrackProjectName(shortName) {
+            let project = _.find(this.projects, {shortName: shortName});
+            return _.get(project, 'name');
+        },
+
+        youtrackUserName(login) {
+            let project = _.find(this.users, {login: login});
+            return _.get(project, 'fullName');
+        },
+
         getField(task, name, asArray) {
             let value = _.chain(task.field).find({ name: name }).get('value').value()
 
@@ -324,19 +374,18 @@ export default {
         this.store.loadOptions(options => {
             this.filters = options.filters;
             this.YT.baseURL = options.baseURL;
+            this.error = false;
 
-            this.YT.getUserGroups().then(groups => {
-                this.groups = groups;
+            Promise.all([
+                this.YT.getProjects().then(p => this.projects = p),
+                this.YT.getUserGroups().then(g => this.groups = g)
+            ])
+            .then(() => {
                 this.loaded = true;
+                this.store.loadByKey('_timeReportGroup', g => this.selectedGroupName = g);
                 this.$nextTick(() => this._fixTypeahead());
-            });
-        });
-
-        this.store.loadByKey('_timeReportGroup', group => {
-            if (group) {
-                this.selectedGroup = group;
-                this.loadUsers(group);
-            }
+            })
+            .catch(e => this.error = true);
         });
     },
 
@@ -349,6 +398,13 @@ export default {
     watch: {
         selectedMonth: function(m) {
             this.today = m.toDate();
+        },
+
+        selectedGroupName: function(groupName) {
+            if (_.get(this.selectedGroup, 'name') != groupName) {
+                let group = _.find(this.groups, {name: groupName});
+                this.loadUsers(group);
+            }
         }
     }
 }

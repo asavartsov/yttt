@@ -75,6 +75,12 @@ export default class YT {
             .then(r => r.data);
     }
 
+    getUser(user) {
+        return this.api
+            .get("rest/admin/user/" + user, {baseURL: this.baseURL})
+            .then(r => r.data);
+    }
+
     getAllUsersInGroup(group) {
         return new Promise((resolve, reject) => {
             let users = [];

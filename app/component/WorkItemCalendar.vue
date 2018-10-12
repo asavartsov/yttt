@@ -13,24 +13,11 @@
         </div>
 
         <div v-if="dayView">
-            <table class="table table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th>{{$l10n('calendarTask')}}</th>
-                        <th>{{$l10n('calendarTime')}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(event, idx) in dayViewEvents" :key="idx">
-                        <td><a :href="event.url" target="_blank">{{event.taskId}}</a> {{event.summary | truncate(50)}}</td>
-                        <td>{{youtrackMinutes(event.duration)}}</td>
-                    </tr>
-                    <tr>
-                        <td><b>{{$l10n('calendarTotal')}}</b></td>
-                        <td><b>{{youtrackMinutes(dayTotal)}}</b></td>
-                    </tr>
-                </tbody>
-            </table>
+            <work-item-calendar-tasks-view
+                :task-view-events="dayViewEvents"
+                :task-view-events-total="dayTotal"
+                :truncate-length="50">
+            </work-item-calendar-tasks-view>
         </div>
 
         <calendar-view
@@ -56,11 +43,13 @@ import _ from 'lodash'
 import L10n from './L10n'
 import { CalendarView, CalendarViewHeader }  from "vue-simple-calendar"
 import CalendarViewHeaderBootstrap from './CalendarViewHeaderBootstrap.vue'
+import WorkItemCalendarTasksView from './WorkItemCalendarTasksView.vue'
 
 export default {
     components: {
         CalendarView,
-		CalendarViewHeaderBootstrap,
+        CalendarViewHeaderBootstrap,
+        WorkItemCalendarTasksView
     },
 
     props: ['initialDate', 'monthViewEvents', 'allEvents', 'tasks', 'showHeader'],

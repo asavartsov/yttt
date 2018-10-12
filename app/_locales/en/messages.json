@@ -131,5 +131,38 @@
   },
   "calendarAssignedOnly": {
     "message": "Assigned Only"
+  },
+  "timeReports": {
+    "message": "Time Reports"
+  },
+  "timeReportsUserGroup": {
+    "message": "User Group"
+  },
+  "timeReportsMonth": {
+    "message": "Month"
+  },
+  "timeReportsLoad": {
+    "message": "Load Reports"
+  },
+  "timeReportsCSV": {
+    "message": "CSV"
+  },
+  "timeReportsProjects": {
+    "message": "Projects"
+  },
+  "timeReportsUsers": {
+    "message": "Users"
+  },
+  "timeReportsCalendars": {
+    "message": "Calendars"
+  },
+  "loadError": {
+    "message": "Error loading data from server"
+  },
+  "taskError": {
+    "message": "Error at creating or updating task"
+  },
+  "taskAdded": {
+    "message": "Added task"
   }
 }

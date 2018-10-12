@@ -34,7 +34,7 @@
                 <label for="assignedOnly">{{$l10n('calendarAssignedOnly')}}</label>
             </span>
             <span class="input-group-btn">
-                <button class="btn btn-default" type="button" @click="openTimeReport" v-if="isAdmin">
+                <button class="btn btn-default" type="button" @click="openTimeReport" v-if="isAdmin" :title="$l10n('timeReports')">
                     <span class="glyphicon glyphicon-stats"></span>
                 </button>
                 <button class="btn btn-primary" type="button" @click="loadWorkItems" :disabled="!username || loading">{{$l10n('calendarLoad')}}</button>
