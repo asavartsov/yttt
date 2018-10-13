@@ -3,7 +3,7 @@
         <div v-if="taskView">
             <div class="task-view-title-header">
                 <button class="btn btn-default btn-xs" @click="showFullView"><span class="glyphicon glyphicon-chevron-left"></span> {{title}}</button>
-                <span class="task-view-title">{{taskViewEntity.subTitle}}</span>
+                <span class="task-view-title" :title="taskViewEntity.subTitle">{{taskViewEntity.title}}</span>
             </div>
             <work-item-calendar-tasks-view
                 :task-view-events="taskViewEntity.tasks"
@@ -14,13 +14,13 @@
         <table class="table table-hover table-bordered" v-else>
             <thead>
                 <tr>
-                    <th>{{title}} <span class="task-view-subtitle">{{subTitle}}</span></th>
+                    <th :title="subTitle">{{title}}</th>
                     <th>{{youtrackMinutes(total)}}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(entity, idx) in entityViewEvents" :key="idx">
-                    <td><a href="#" @click.stop.prevent="showTaskView(entity)">{{entity.subTitle}}</a></td>
+                    <td><a href="#" @click.stop.prevent="showTaskView(entity)" :title="entity.subTitle">{{entity.title}}</a></td>
                     <td>{{youtrackMinutes(entity.duration)}}</td>
                 </tr>
             </tbody>

@@ -56,8 +56,8 @@
         <v-tab :title="$l10n('timeReportsProjects')">
             <div v-for="(item, idx) in workitemsByProject" :key="'project-' + idx">
                 <time-report-table-view
-                    :title="item.project"
-                    :sub-title="youtrackProjectName(item.project)"
+                    :title="item.fullName"
+                    :sub-title="item.project"
                     :total="item.total"
                     :entity-view-events="item.userViewEvents">
                 </time-report-table-view>
@@ -67,8 +67,8 @@
         <v-tab :title="$l10n('timeReportsUsers')">
             <div v-for="(item, idx) in workitemsByUser" :key="'user-' + idx">
                 <time-report-table-view
-                    :title="item.username"
-                    :sub-title="youtrackUserName(item.username)"
+                    :title="item.fullName"
+                    :sub-title="item.username"
                     :total="item.total"
                     :entity-view-events="item.projectViewEvents">
                 </time-report-table-view>
@@ -78,7 +78,7 @@
 
         <v-tab :title="$l10n('timeReportsCalendars')">
             <div v-for="(item, idx) in workitemsByUser" :key="'calendar' + idx" class="user-calendar">
-                <div class="calendar-header">{{youtrackUserName(item.username)}}</div>
+                <div class="calendar-header" :title="item.username">{{youtrackUserName(item.username)}}</div>
 
                 <work-item-calendar
                     :initialDate="today"
@@ -199,26 +199,27 @@ export default {
                     .map((v, k) => {
                         let duration = _.sumBy(v, 'duration');
                         return {
-                            title: k,
-                            subTitle: this.youtrackProjectName(k),
+                            title: this.youtrackProjectName(k),
+                            subTitle: k,
                             duration: duration,
                             tasks: this.aggregateTasks(username, k)
                         };
                     })
-                    .sortBy('project')
+                    .sortBy('title')
                     .value();
 
                 let total = _.sumBy(workitems, 'duration');
 
                 return {
                     username: username,
+                    fullName: this.youtrackUserName(username),
                     monthViewEvents: monthViewEvents,
                     allEvents: workitems,
                     projectViewEvents: projectViewEvents,
                     total: total
                 };
             })
-            .sortBy('username')
+            .sortBy('fullName')
             .value();
 
             let projects = _.groupBy(this.workitems, 'project');
@@ -229,25 +230,26 @@ export default {
                     .map((v, k) => {
                         let duration = _.sumBy(v, 'duration');
                         return {
-                            title: k,
-                            subTitle: this.youtrackUserName(k),
+                            title: this.youtrackUserName(k),
+                            subTitle: k,
                             duration: duration,
                             tasks: this.aggregateTasks(k, project)
                         };
                     })
-                    .sortBy('username')
+                    .sortBy('title')
                     .value();
 
                 let total = _.sumBy(workitems, 'duration');
 
                 return {
                     project: project,
+                    fullName: this.youtrackProjectName(project),
                     userViewEvents: userViewEvents,
                     allEvents: workitems,
                     total: total
                 };
             })
-            .sortBy('project')
+            .sortBy('fullName')
             .value();
         },
 
@@ -375,12 +377,12 @@ export default {
 
         youtrackProjectName(shortName) {
             let project = _.find(this.projects, {shortName: shortName});
-            return _.get(project, 'name');
+            return _.get(project, 'name') || shortName;
         },
 
         youtrackUserName(login) {
             let project = _.find(this.users, {login: login});
-            return _.get(project, 'fullName');
+            return _.get(project, 'fullName') || login;
         },
 
         getField(task, name, asArray) {
