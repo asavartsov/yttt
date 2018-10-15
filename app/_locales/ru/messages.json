@@ -168,6 +168,12 @@
   "timeReportsNoWorkitems": {
     "message": "Не найдено единиц работы за выбранный месяц для заданной группы"
   },
+  "timeReportsContracts": {
+    "message": "Контракты"
+  },
+  "timeReportsOther": {
+    "message": "Прочие"
+  },
   "loadError": {
     "message": "При загрузке данных произошла ошибка"
   },

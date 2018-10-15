@@ -168,6 +168,12 @@
   "timeReportsNoWorkitems": {
     "message": "There are no workitems matching the given group and month combination"
   },
+  "timeReportsContracts": {
+    "message": "Contracts"
+  },
+  "timeReportsOther": {
+    "message": "Other"
+  },
   "loadError": {
     "message": "Error loading data from server"
   },

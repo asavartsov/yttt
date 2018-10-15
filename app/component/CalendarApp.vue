@@ -64,6 +64,16 @@
             </div>
         </v-tab>
 
+        <v-tab :title="$l10n('timeReportsContracts')">
+            <div v-for="(item, idx) in workitemsByContract" :key="'contract-' + idx">
+                <time-report-table-view
+                    :title="item.contract || $l10n('timeReportsOther')"
+                    :total="item.total"
+                    :entity-view-events="item.userViewEvents">
+                </time-report-table-view>
+            </div>
+        </v-tab>
+
         <v-tab :title="$l10n('timeReportsUsers')">
             <div v-for="(item, idx) in workitemsByUser" :key="'user-' + idx">
                 <time-report-table-view
@@ -163,9 +173,9 @@ export default {
             return `${this.assignedOnly ? '#' + this.username : ''} updated: ${period} .. ${this.youtrackMonth(new Date())}`;
         },
 
-        aggregateTasks(username, project) {
+        aggregateTasks(filter) {
             return _.chain(this.workitems)
-                .filter({username: username, project: project})
+                .filter(filter)
                 .groupBy('taskId')
                 .map((v, k) => {
                     let duration = _.sumBy(v, 'duration');
@@ -174,7 +184,7 @@ export default {
 
                     return {
                         taskId: k,
-                        username: username,
+                        username: _.get(filter, 'username'),
                         duration: duration,
                         summary: summary,
                         url: this.YT.baseURL + '/issue/' + k
@@ -202,7 +212,7 @@ export default {
                             title: this.youtrackProjectName(k),
                             subTitle: k,
                             duration: duration,
-                            tasks: this.aggregateTasks(username, k)
+                            tasks: this.aggregateTasks({username: username, project: k})
                         };
                     })
                     .sortBy('title')
@@ -233,7 +243,7 @@ export default {
                             title: this.youtrackUserName(k),
                             subTitle: k,
                             duration: duration,
-                            tasks: this.aggregateTasks(k, project)
+                            tasks: this.aggregateTasks({username: k, project: project})
                         };
                     })
                     .sortBy('title')
@@ -244,6 +254,38 @@ export default {
                 return {
                     project: project,
                     fullName: this.youtrackProjectName(project),
+                    userViewEvents: userViewEvents,
+                    allEvents: workitems,
+                    total: total
+                };
+            })
+            .sortBy('fullName')
+            .value();
+
+            let contracts = _.groupBy(this.workitems, 'contract');
+
+            this.workitemsByContract = _.chain(contracts).map((workitems, contract) => {
+                contract = contract === 'undefined' ? undefined : contract;
+
+                let userViewEvents = _.chain(workitems)
+                    .groupBy('username')
+                    .map((v, k) => {
+                        let duration = _.sumBy(v, 'duration');
+                        return {
+                            title: this.youtrackUserName(k),
+                            subTitle: k,
+                            duration: duration,
+                            tasks: this.aggregateTasks({username: k, contract: contract})
+                        };
+                    })
+                    .sortBy('title')
+                    .value();
+
+                let total = _.sumBy(workitems, 'duration');
+
+                return {
+                    contract: contract,
+                    fullName: contract,
                     userViewEvents: userViewEvents,
                     allEvents: workitems,
                     total: total
@@ -278,6 +320,7 @@ export default {
                             let taskId = item.url.match(/rest\/issue\/([\w-]+)\//)[1];
                             let task = _.find(this.tasks, {id: taskId});
                             let summary = this.getField(task, 'summary');
+                            let contract = this.getField(task, 'Договор');
 
                             return {
                                 id: item.id,
@@ -287,7 +330,8 @@ export default {
                                 summary: summary,
                                 url: this.YT.baseURL + '/issue/' + taskId,
                                 duration: item.duration,
-                                project: _.get(taskId.match(/(.*)-\d+$/), 1)
+                                project: _.get(taskId.match(/(.*)-\d+$/), 1),
+                                contract: contract
                             };
                         })
                         .value();
