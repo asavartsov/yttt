@@ -233,4 +233,8 @@ export default {
         margin: 0;
         vertical-align: middle;
     }
+
+    .checkbox-addon label {
+        user-select: none;
+    }
 </style>

@@ -8,7 +8,7 @@
         </thead>
         <tbody>
             <tr v-for="(event, idx) in taskViewEvents" :key="idx">
-                <td><a :href="event.url" target="_blank">{{event.taskId}}</a> {{event.summary | truncate(truncateLength)}}</td>
+                <td><a :href="event.url" @click.stop.prevent="openLink(event.url)">{{event.taskId}}</a> {{event.summary | truncate(truncateLength)}}</td>
                 <td>{{youtrackMinutes(event.duration)}}</td>
             </tr>
             <tr>
@@ -38,6 +38,10 @@ export default {
     },
 
     methods: {
+        openLink(url) {
+            chrome.tabs.create({url: url, active: false});
+        },
+
         youtrackMinutes: function(m) {
             var hours = parseInt(m / 60);
             return ((hours > 0) ? hours + L10n.l10n('h') : '') + m % 60 + L10n.l10n('m')

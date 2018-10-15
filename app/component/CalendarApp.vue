@@ -20,8 +20,17 @@
             :maximumView="'month'"
             :disabled="loading">
         </datepicker>
+    </div>
+
+    <div class="input-group form-group">
+        <span class="input-group-addon checkbox-addon">
+            <input type="checkbox" id="applyFilter" v-model="applyFilter" :disabled="loading">
+            <label for="applyFilter">{{$l10n('timeReportsApplyFilter')}}</label>
+        </span>
+        <input type="text" class="form-control" v-model="filter" :disabled="loading || !applyFilter" :placeholder="$l10n('timeReportsFilter')">
         <span class="input-group-btn">
-            <button class="btn btn-primary" @click="load" :disabled="loading || (users.length == 0)">{{$l10n('timeReportsLoad')}}</button>
+            <button class="btn btn-primary" @click="load" v-if="!loading || (tasksTotal == 0)" :disabled="loading || (users.length == 0)">{{$l10n('timeReportsLoad')}}</button>
+            <button class="btn btn-danger" @click="stop = true" v-if="loading && (tasksTotal > 0)" :disabled="stop">{{$l10n('timeReportsCancel')}}</button>
             <button class="btn btn-default" @click="exportCSV" :disabled="loading || (workitems.length == 0)">{{$l10n('timeReportsCSV')}}</button>
         </span>
     </div>
@@ -132,7 +141,10 @@ export default {
             tasksProcessed: 0,
             tasksTotal: 0,
             groupSearch: '',
-            group: ''
+            group: '',
+            filter: '',
+            applyFilter: false,
+            stop: false
         }
     },
 
@@ -170,7 +182,7 @@ export default {
 
         getFilter() {
             let period = this.youtrackMonth(this.today);
-            return `${this.assignedOnly ? '#' + this.username : ''} updated: ${period} .. ${this.youtrackMonth(new Date())}`;
+            return `${this.applyFilter ? this.filter : ''} updated: ${period} .. ${this.youtrackMonth(new Date())}`;
         },
 
         aggregateTasks(filter) {
@@ -338,7 +350,14 @@ export default {
 
                     this.workitems = this.workitems.concat(workitems);
                     this.processWorkItems();
-                    setTimeout(() => this.loadTasks(after + 100), 0);
+
+                    if (!this.stop) {
+                        setTimeout(() => this.loadTasks(after + 100), 0);
+                    }
+                    else {
+                        this.clearWorkitems();
+                        this.loading = false;
+                    }
                 }
                 else {
                     this.tasks = _.uniqBy(this.tasks, 'id');
@@ -364,9 +383,12 @@ export default {
 
         load() {
             this.error = false;
+            this.stop = false;
             this.loading = true;
             this.clearWorkitems();
             this.store.saveByKey('_timeReportGroup', this.group);
+            this.store.saveByKey('_timeReportFilter', this.filter);
+            this.store.saveByKey('_timeReportApplyFilter', this.applyFilter);
 
             this.YT
                 .getTaskCount(this.getFilter())
@@ -460,7 +482,9 @@ export default {
             ])
             .then(() => {
                 this.loaded = true;
-                this.store.loadByKey('_timeReportGroup', g => this.loadUsers(g));
+                this.store.loadByKey('_timeReportGroup', v => this.loadUsers(v));
+                this.store.loadByKey('_timeReportFilter', v => this.filter = v || '');
+                this.store.loadByKey('_timeReportApplyFilter', v => this.applyFilter = !!v);
                 this.$nextTick(() => this._fixTypeahead());
             })
             .catch(e => this.error = true);
@@ -494,8 +518,10 @@ export default {
         width: 125px;
     }
 
-    .vdp-datepicker input[readonly] {
+    .vdp-datepicker input.form-control[readonly] {
         background: white;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
     }
 
     .vdp-datepicker__calendar {
@@ -527,5 +553,16 @@ export default {
 
     .time-reports .tab-container {
         margin-top: 20px;
+    }
+
+    .checkbox-addon input,
+    .checkbox-addon label {
+        font-weight: normal;
+        margin: 0;
+        vertical-align: middle;
+    }
+
+    .checkbox-addon label {
+        user-select: none;
     }
 </style>

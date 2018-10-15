@@ -144,6 +144,15 @@
   "timeReportsLoad": {
     "message": "Load Reports"
   },
+  "timeReportsCancel": {
+    "message": "Stop Loading"
+  },
+  "timeReportsFilter": {
+    "message": "Filter"
+  },
+  "timeReportsApplyFilter": {
+    "message": "Apply Filter"
+  },
   "timeReportsCSV": {
     "message": "CSV"
   },

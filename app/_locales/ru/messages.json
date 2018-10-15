@@ -144,6 +144,15 @@
   "timeReportsLoad": {
     "message": "Загрузить отчеты"
   },
+  "timeReportsCancel": {
+    "message": "Остановить загрузку"
+  },
+  "timeReportsFilter": {
+    "message": "Фильтр"
+  },
+  "timeReportsApplyFilter": {
+    "message": "Применить фильтр"
+  },
   "timeReportsCSV": {
     "message": "CSV"
   },
@@ -169,7 +178,7 @@
     "message": "Не найдено единиц работы за выбранный месяц для заданной группы"
   },
   "timeReportsContracts": {
-    "message": "Контракты"
+    "message": "Договоры"
   },
   "timeReportsOther": {
     "message": "Прочие"
