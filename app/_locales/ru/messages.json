@@ -183,6 +183,9 @@
   "timeReportsOther": {
     "message": "Прочие"
   },
+  "timeReportsChart": {
+    "message": "Диаграмма"
+  },
   "loadError": {
     "message": "При загрузке данных произошла ошибка"
   },

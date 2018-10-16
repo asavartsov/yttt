@@ -183,6 +183,9 @@
   "timeReportsOther": {
     "message": "Other"
   },
+  "timeReportsChart": {
+    "message": "Chart"
+  },
   "loadError": {
     "message": "Error loading data from server"
   },

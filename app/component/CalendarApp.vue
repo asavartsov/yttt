@@ -28,6 +28,10 @@
             <label for="applyFilter">{{$l10n('timeReportsApplyFilter')}}</label>
         </span>
         <input type="text" class="form-control" v-model="filter" :disabled="loading || !applyFilter" :placeholder="$l10n('timeReportsFilter')">
+        <span class="input-group-addon checkbox-addon">
+            <input type="checkbox" id="chart" v-model="chart">
+            <label for="chart">{{$l10n('timeReportsChart')}}</label>
+        </span>
         <span class="input-group-btn">
             <button class="btn btn-primary" @click="load" v-if="!loading || (tasksTotal == 0)" :disabled="loading || (users.length == 0)">{{$l10n('timeReportsLoad')}}</button>
             <button class="btn btn-danger" @click="stop = true" v-if="loading && (tasksTotal > 0)" :disabled="stop">{{$l10n('timeReportsCancel')}}</button>
@@ -63,7 +67,8 @@
 
     <vue-tabs v-if="workitems.length > 0">
         <v-tab :title="$l10n('timeReportsProjects')">
-            <div v-for="(item, idx) in workitemsByProject" :key="'project-' + idx">
+            <column-chart v-if="chart" :data="chartByUser" :stacked="true" :library="chartOptions" :dataset="{borderWidth: 0}" height="600px"></column-chart>
+            <div v-else v-for="(item, idx) in workitemsByProject" :key="'project-' + idx">
                 <time-report-table-view
                     :title="item.fullName"
                     :sub-title="item.project"
@@ -74,7 +79,8 @@
         </v-tab>
 
         <v-tab :title="$l10n('timeReportsContracts')">
-            <div v-for="(item, idx) in workitemsByContract" :key="'contract-' + idx">
+            <column-chart v-if="chart" :data="chartByContract" :stacked="true" :library="chartOptions" :dataset="{borderWidth: 0}" height="600px"></column-chart>
+            <div v-else v-for="(item, idx) in workitemsByContract" :key="'contract-' + idx">
                 <time-report-table-view
                     :title="item.contract || $l10n('timeReportsOther')"
                     :total="item.total"
@@ -84,7 +90,8 @@
         </v-tab>
 
         <v-tab :title="$l10n('timeReportsUsers')">
-            <div v-for="(item, idx) in workitemsByUser" :key="'user-' + idx">
+            <column-chart v-if="chart" :data="chartByProject" :stacked="true" :library="chartOptions" :dataset="{borderWidth: 0}" height="600px"></column-chart>
+            <div v-else v-for="(item, idx) in workitemsByUser" :key="'user-' + idx">
                 <time-report-table-view
                     :title="item.fullName"
                     :sub-title="item.username"
@@ -129,8 +136,12 @@ export default {
             projects: [],
             groups: [],
             users: [],
+            chartByUser: [],
             workitemsByUser: [],
+            chartByProject: [],
             workitemsByProject: [],
+            workitemsByContract: [],
+            chartByContract: [],
             tasks: [],
             today: new Date(),
             workitems: [],
@@ -144,7 +155,31 @@ export default {
             group: '',
             filter: '',
             applyFilter: false,
-            stop: false
+            stop: false,
+            chart: false,
+            chartOptions: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: (label, index, labels) => this.youtrackMinutes(label)
+                        }
+                    }]
+                },
+                tooltips: {
+                    callbacks: {
+                        label: (tooltipItem, data) => {
+                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+
+                            label += this.youtrackMinutes(tooltipItem.yLabel);
+                            return label;
+                        }
+                    }
+                }
+            }
         }
     },
 
@@ -207,6 +242,18 @@ export default {
         processWorkItems() {
             let users = _.groupBy(this.workitems, 'username');
 
+            this.chartByUser = _.map(users, (workitems, username) => {
+                let projects = _.chain(workitems)
+                    .groupBy('project')
+                    .reduce((r, v, k) => _.set(r, [k], _.sumBy(v, 'duration')), {})
+                    .value();
+
+                return {
+                    name: this.youtrackUserName(username),
+                    data: projects
+                };
+            });
+
             this.workitemsByUser = _.chain(users).map((workitems, username) => {
                 let monthViewEvents = _.chain(workitems)
                     .groupBy('day')
@@ -246,6 +293,18 @@ export default {
 
             let projects = _.groupBy(this.workitems, 'project');
 
+            this.chartByProject = _.map(projects, (workitems, project) => {
+                let users = _.chain(workitems)
+                    .groupBy('username')
+                    .reduce((r, v, k) => _.set(r, [k], _.sumBy(v, 'duration')), {})
+                    .value();
+
+                return {
+                    name: this.youtrackProjectName(project),
+                    data: users
+                };
+            });
+
             this.workitemsByProject = _.chain(projects).map((workitems, project) => {
                 let userViewEvents = _.chain(workitems)
                     .groupBy('username')
@@ -275,6 +334,18 @@ export default {
             .value();
 
             let contracts = _.groupBy(this.workitems, 'contract');
+
+            this.chartByContract = _.map(users, (workitems, username) => {
+                let projects = _.chain(workitems)
+                    .groupBy('contract')
+                    .reduce((r, v, k) => _.set(r, [k === 'undefined' ? this.$l10n('timeReportsOther') : k], _.sumBy(v, 'duration')), {})
+                    .value();
+
+                return {
+                    name: this.youtrackUserName(username),
+                    data: projects
+                };
+            });
 
             this.workitemsByContract = _.chain(contracts).map((workitems, contract) => {
                 contract = contract === 'undefined' ? undefined : contract;
@@ -375,8 +446,12 @@ export default {
             this.tasksProcessed = 0;
             this.tasks = [];
             this.workitems = [];
+            this.chartByUser = [];
             this.workitemsByUser = [];
+            this.chartByProject = [];
             this.workitemsByProject = [];
+            this.chartByContract = [];
+            this.workitemsByContract = [];
             this.tasksTotal = 0;
             this.showInfo = true;
         },
@@ -388,6 +463,7 @@ export default {
             this.clearWorkitems();
             this.store.saveByKey('_timeReportGroup', this.group);
             this.store.saveByKey('_timeReportFilter', this.filter);
+            this.store.saveByKey('_timeReportChart', this.chart);
             this.store.saveByKey('_timeReportApplyFilter', this.applyFilter);
 
             this.YT
@@ -485,6 +561,7 @@ export default {
                 this.store.loadByKey('_timeReportGroup', v => this.loadUsers(v));
                 this.store.loadByKey('_timeReportFilter', v => this.filter = v || '');
                 this.store.loadByKey('_timeReportApplyFilter', v => this.applyFilter = !!v);
+                this.store.loadByKey('_timeReportChart', v => this.chart = !!v);
                 this.$nextTick(() => this._fixTypeahead());
             })
             .catch(e => this.error = true);
