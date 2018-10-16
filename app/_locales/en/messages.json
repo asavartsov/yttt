@@ -186,6 +186,12 @@
   "loadError": {
     "message": "Error loading data from server"
   },
+  "authError": {
+    "message": "An open YouTrack tab with authentication is required for loading data, please proceed to YouTrack page and log in. Keep the tab open while using the extension. Your server address is"
+  },
+  "noServer": {
+    "message": "unset, please right click the extension icon and configure options."
+  },
   "taskError": {
     "message": "Error at creating or updating task"
   },

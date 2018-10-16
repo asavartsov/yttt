@@ -20,8 +20,8 @@ export default class Store {
         chrome.storage.sync.get(_defaults, callback);
     }
 
-    saveOptions(options) {
-        chrome.storage.sync.set(options, () => this.bus.send('optionsSaved', options));
+    saveOptions(options, callback) {
+        chrome.storage.sync.set(options, () => { this.bus.send('optionsSaved', options); callback(options); });
     }
 
     loadTasks(key, callback) {

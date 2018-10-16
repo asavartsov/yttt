@@ -10,6 +10,9 @@
     "32": "images/icon-32.png",
     "128": "images/icon-128.png"
   },
+  "web_accessible_resources": [
+    "pages/calendar.html"
+  ],
   "background": {
     "scripts": [
       "scripts/background.js"

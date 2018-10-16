@@ -44,7 +44,7 @@ export default {
     methods: {
         save() {
             this.options.baseURL = this.options.baseURL.replace(/\/$/, '');
-            this.store.saveOptions(this.options);
+            this.store.saveOptions(this.options, () => window.close());
         },
 
         addFilter() {

@@ -33,6 +33,8 @@ class Background {
     let _innerFn = () =>_.each(this.filters, (filter, idx) => {
       this.client.getTasks(filter.filter).then(tasks => {
         let key = 'tasks' + idx;
+        this.store.saveByKey('_bgNoAuth', false);
+        this.store.saveByKey('_bgError', false);
         this.store.saveTasks(key, tasks);
         this.bus.send('updateTaskList', {key: key});
 
@@ -40,16 +42,23 @@ class Background {
           let active = _.filter(tasks, t => _.chain(t.field).find({name: 'Timer'}).get('value[0]') == "Start");
           chrome.browserAction.setBadgeText({text: active.length > 0 ? "T" : ""});
         }
+      })
+      .catch(e => {
+        if (_.get(e, 'response.status') == 401) {
+          this.store.saveByKey('_bgNoAuth', true);
+        }
+        else {
+          this.store.saveByKey('_bgError', {message: _.get(e, 'message'), data: _.get(e, 'response.data')});
+        }
       });
     });
 
     // Загружать задачи, только если есть вкладки с YouTrack
     // Иначе все равно нет аутентификации
-    chrome.tabs.query({url: this.client.baseURL + '/*'}, t => {
-      if (!_.isEmpty(t)) {
-        _innerFn();
-      }
-    });
+    chrome.tabs.query(
+      {url: this.client.baseURL + '/*'},
+      t => _.isEmpty(t) ? this.store.saveByKey('_bgNoAuth', true) : _innerFn()
+    );
   }
 }
 
