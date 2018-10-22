@@ -29,7 +29,7 @@ export default class YT {
 
     getTasks(filter, limits, fields) {
         limits = limits || {max: 100, after: 0};
-        fields = fields || ['summary', 'Assignee', 'Timer', 'resolved', 'State', 'Timer time', 'Time Spent', 'Fix versions', 'Priority', 'projectShortName', 'Договор'];
+        fields = fields || ['summary', 'Assignee', 'Timer', 'resolved', 'State', 'Timer time', 'Time Spent', 'Fix versions', 'Priority', 'projectShortName', 'tag', 'Договор'];
 
         return this.api
             .get("rest/issue?" + qs.stringify({max: limits.max, after: limits.after, filter: filter, with: fields}, {indices: false}), {baseURL: this.baseURL})
