@@ -259,7 +259,7 @@ export default {
                     .groupBy('day')
                     .map((v, k) => {
                         let duration = _.sumBy(v, 'duration');
-                        return { id: k, startDate: new Date(k), title: this.youtrackMinutes(duration), classes: 'pointer' };
+                        return { id: k, startDate: new Date(k), title: this.youtrackMinutes(duration), classes: this.getEventClass(duration) };
                     })
                     .value();
 
@@ -535,6 +535,20 @@ export default {
             }
 
             return value;
+        },
+
+        getEventClass(duration) {
+            let classes = ['pointer'];
+
+            if (duration <= 7 * 60) {
+                classes.push('underdue');
+            }
+
+            if (duration >= 9 * 60) {
+                classes.push('overdue');
+            }
+
+            return classes.join(' ');
         },
 
         _fixTypeahead() {

@@ -128,4 +128,14 @@ export default {
         background: whitesmoke;
         color: #dadada;
     }
+
+    .theme-default .cv-event.overdue {
+        border-color: #ffa5a5;
+        background-color: #ffb1b1;
+    }
+
+    .theme-default .cv-event.underdue {
+        border-color: #ffe3a5;
+        background-color: #ffebb1;
+    }
 </style>
