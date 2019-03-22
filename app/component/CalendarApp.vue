@@ -36,6 +36,7 @@
             <button class="btn btn-primary" @click="load" v-if="!loading || (tasksTotal == 0)" :disabled="loading || (users.length == 0)">{{$l10n('timeReportsLoad')}}</button>
             <button class="btn btn-danger" @click="stop = true" v-if="loading && (tasksTotal > 0)" :disabled="stop">{{$l10n('timeReportsCancel')}}</button>
             <button class="btn btn-default" @click="exportCSV" :disabled="loading || (workitems.length == 0)">{{$l10n('timeReportsCSV')}}</button>
+            <button class="btn btn-default" @click="exportCSVTasks">{{$l10n('timeReportsTasksCSV')}}</button>
         </span>
     </div>
 
@@ -498,6 +499,50 @@ export default {
                     document.body.removeChild(link);
                 }
             }
+        },
+
+        exportCSVTasks() {
+            let _deepGetField = (t, f) => {
+                let v = this.getField(t, f);
+                return _.get(v, 'value', v);
+            }
+
+            this.YT.getTasks(this.getFilter(), {max: 50000, after: 0}, [
+                'created',
+                'projectShortName',
+                'summary',
+                'Subsystem',
+                'Assignee',
+                'Estimation',
+                'Time Spent'
+            ]).then(tasks => {
+                let rows = _.map(tasks, task => {
+                    let row = {id: task.id};
+                    _.each(task.field, f => _.set(row, f.name, _deepGetField(task, f.name)));
+                    return row;
+                });
+
+                let csv = papaparse.unparse(_.map(rows, o => _.extend({}, o, {created: this.excelDate(new Date(Number(o.created)))})));
+                let filename = 'tasks-' + this.youtrackMonth(this.today) + '.csv';
+
+                var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+                if (navigator.msSaveBlob) {
+                    navigator.msSaveBlob(blob, filename);
+                } else {
+                    var link = document.createElement("a");
+
+                    if (link.download !== undefined) {
+                        var url = URL.createObjectURL(blob);
+                        link.setAttribute("href", url);
+                        link.setAttribute("download", filename);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }
+            });
         },
 
         excelDate (date) {
