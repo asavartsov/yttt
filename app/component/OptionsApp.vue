@@ -19,6 +19,14 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <label>
+                    <input type="checkbox" class="form-control" v-model="options.changeTaskState">
+                    {{$l10n('optionsChangeTaskState')}}
+                </label>
+            </div>
+        </div>
         <button type="button" class="btn btn-primary" @click="save">{{$l10n('optionsSave')}}</button>
         <button type="button" class="btn btn-default" @click="addFilter">{{$l10n('optionsAddFilterTab')}}</button>
     </form>

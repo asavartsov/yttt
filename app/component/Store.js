@@ -3,6 +3,7 @@ import L10n from './L10n'
 
 let _defaults = {
     baseURL: "http://ticket.infolan.org",
+    changeTaskState: true,
     filters: [
         {
             title: L10n.l10n('myTasks'),
