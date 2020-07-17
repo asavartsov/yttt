@@ -67,14 +67,26 @@ export default {
 
     methods: {
         startTimer() {
+            var command = "Timer Start";
+
+            if (this.bus.getGlobal('changeTaskState')) {
+                command += " state In Progress";
+            }
+
             this.YT
-                .taskCommand(this.id, "Timer Start state In Progress")
+                .taskCommand(this.id, command)
                 .then(() => this.bus.send('loadTasks'));
         },
 
         stopTimer() {
+            var command = "Timer Stop";
+
+            if (this.bus.getGlobal('optionsSaved')) {
+                command += " state Open";
+            }
+
             this.YT
-                .taskCommand(this.id, "Timer Stop state Open")
+                .taskCommand(this.id, command)
                 .then(() => this.bus.send('loadTasks'));
         },
 

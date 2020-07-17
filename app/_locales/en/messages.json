@@ -36,6 +36,9 @@
   "optionsAddFilterTab": {
     "message": "Add Filter Tab"
   },
+  "optionsChangeTaskState": {
+    "message": "Change task state after staring or stopping timer"
+  },
   "taskStart": {
     "message": "Start"
   },

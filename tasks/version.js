@@ -40,8 +40,9 @@ function inc(importance) {
     .pipe(tagVersion());
 }
 
-gulp.task('patch', () => {
+gulp.task('patch', done => {
   inc('patch');
+  done();
 });
 
 gulp.task('feature', done => {

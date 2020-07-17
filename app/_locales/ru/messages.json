@@ -36,6 +36,9 @@
   "optionsAddFilterTab": {
     "message": "Добавить вкладку"
   },
+  "optionsChangeTaskState": {
+    "message": "Изменять состояние задачи при запуске и остановке таймера"
+  },
   "taskStart": {
     "message": "Старт"
   },

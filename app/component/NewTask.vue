@@ -99,7 +99,7 @@ export default {
 
         saveAndStart() {
             return this.saveAction()
-                .then(() => this.YT.taskCommand(this.lastTaskId, "state In Progress"))
+                .then(() => this.bus.getGlobal('changeTaskState') ? this.YT.taskCommand(this.lastTaskId, "state In Progress") : Promise.resolve())
                 .then(() => this.YT.taskCommand(this.lastTaskId, "Timer Start"))
                 .then(() => this.saveAfter())
                 .catch(_ => this.error = true);

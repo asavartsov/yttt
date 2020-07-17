@@ -68,6 +68,7 @@ export default {
     this.store.loadOptions(options => {
       this.filters = options.filters;
       this.YT.baseURL = options.baseURL;
+      this.bus.setGlobal('changeTaskState', options.changeTaskState);
       this.loaded = true;
     });
 

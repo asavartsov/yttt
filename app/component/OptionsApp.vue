@@ -22,7 +22,7 @@
         <div class="form-group">
             <div class="col-sm-12">
                 <label>
-                    <input type="checkbox" class="form-control" v-model="options.changeTaskState">
+                    <input type="checkbox" v-model="options.changeTaskState">
                     {{$l10n('optionsChangeTaskState')}}
                 </label>
             </div>
