@@ -31,7 +31,7 @@
     "css-loader": "^0.26.2",
     "debounce": "1.x.x",
     "del": "2.x.x",
-    "eslint": "3.x.x",
+    "eslint": "4.x.x",
     "eslint-loader": "1.x.x",
     "gulp": "4.x.x",
     "gulp-bump": "2.x.x",
