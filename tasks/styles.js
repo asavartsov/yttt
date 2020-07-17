@@ -43,9 +43,8 @@ gulp.task('styles:sass', function() {
     .pipe(gulpif(args.watch, livereload()));
 });
 
-gulp.task('styles', [
-  'styles:css',
-  'styles:less',
-  'styles:sass'
-]);
-
+gulp.task('styles', gulp.series(
+  'styles:css', 
+  'styles:less', 
+  'styles:sass')
+);

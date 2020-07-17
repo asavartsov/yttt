@@ -1,8 +1,18 @@
 import gulp from 'gulp';
 import gulpSequence from 'gulp-sequence';
 
-gulp.task('build', gulpSequence(
-  'clean', [
+import './clean'
+import './manifest'
+import './scripts'
+import './styles'
+import './pages'
+import './locales'
+import './images'
+import './fonts'
+import './chromereload'
+
+gulp.task('build', gulp.series(
+    'clean', 
     'manifest',
     'scripts',
     'styles',
@@ -10,6 +20,6 @@ gulp.task('build', gulpSequence(
     'locales',
     'images',
     'fonts',
-    'chromereload'
-  ]
-));
+    'chromereload',
+    done => done()
+  ));

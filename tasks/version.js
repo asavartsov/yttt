@@ -41,13 +41,15 @@ function inc(importance) {
 }
 
 gulp.task('patch', () => {
-  return inc('patch');
+  inc('patch');
 });
 
-gulp.task('feature', () => {
-  return inc('minor');
+gulp.task('feature', done => {
+  inc('minor');
+  done();
 });
 
-gulp.task('release', () => {
-  return inc('major');
+gulp.task('release', done => {
+  inc('major');
+  done();
 });
