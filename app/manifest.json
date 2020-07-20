@@ -28,7 +28,6 @@
   "permissions": [
     "storage",
     "cookies",
-    "notifications",
     "tabs",
     "<all_urls>"
   ]
